@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="color-scheme" content="light dark" />
+        <title>DrinkBot</title>
+    </head>
+    <body>        
+        <p>Save IP Address Below:</p>
+        <br/>
+        <p>http://{{ip_num}}/</p>
+        <br>
+        <p>Once you have saved the IP address, press the restart button below and the Drinkbot will be reset.</p>
+        <br>
+        <p>Wait 30 seconds and you will be able to access the DrinkBot's homepage using this IP address on your local wifi.</p>
+        <button id="toggleBtn">Restart</button>
+        <script src="data:text/javascript,document.getElementById('toggleBtn').onclick = async function() { await fetch('/reset'); };" defer></script>
+    </body>
+</html>
