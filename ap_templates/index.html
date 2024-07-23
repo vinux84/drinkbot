@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light dark" />
+    <title>DrinkBot</title>
+  </head>
+    <body>
+        <h1>DrinkBot</h1>
+        <p>You are now connected to DrinkBot's setup page.</p>
+        <p>Let's configure DrinkBot to connect to your local wifi</p>
+        <form action="/configure" method="POST" autocomplete="off" autocapitalize="none">
+            <label for="ssid">Network Name:</label><br>
+            <input type="text" id="ssid" name="ssid"><br>
+            <label for="password">Password:</label><br>
+            <input type="text" id="password" name="password"><br><br>
+            <button>Save</button>
+        </form>
+    </body>
+</html>
