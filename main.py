@@ -123,7 +123,6 @@ def reset():
                 server_stop()
                 u -= 1
                 
-                
 reset()                                           # Home machine to default positions
 
 def find_time(ounces):
