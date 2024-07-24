@@ -158,35 +158,6 @@ def update_json(key, value):                        # Update drinks in json file
     with open(DRINKS, 'w') as f:
         f.write(json.dumps(drink_db))
     
-def button_poll():                             # button IRQ from another pico
-    uart = UART(1, baudrate=9600, rx=Pin(5))
-    uart.init(bits=8, parity=None, stop=2)
-    while True:
-        if uart.any(): 
-            data = uart.read() 
-            if data == b'1':
-                print('drink one')
-                type_drink = 'one'
-                one_drink_amount_button = get_drink_amount(type_drink)
-                main_dispense(type_drink, one_drink_amount_button)
-            elif data == b'2':
-                print('drink two')
-                type_drink = 'two'
-                two_drink_amount_button = get_drink_amount(type_drink)
-                main_dispense(type_drink, two_drink_amount_button)
-            elif data == b'3':
-                print('drink three')
-                type_drink = 'three'
-                three_drink_amount_button = get_drink_amount(type_drink)
-                main_dispense(type_drink, three_drink_amount_button)
-            elif data == b'4':
-                print('drink four')
-                type_drink = 'four'
-                four_drink_amount_button = get_drink_amount(type_drink)
-                main_dispense(type_drink, four_drink_amount_button)
-                    
-_thread.start_new_thread(button_poll, ())
-
 def machine_reset():
     utime.sleep(1)
     print("Resetting...")
