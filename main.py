@@ -16,7 +16,6 @@ IP_ADDRESS = "ip.json"
 DRINKS = "drink.json"
 WIFI_MAX_ATTEMPTS = 3
 
-
 ir_sensor = machine.Pin(14, machine.Pin.IN, machine.Pin.PULL_DOWN)
 
 limit_switch_top = machine.Pin(11, machine.Pin.IN, machine.Pin.PULL_UP) 
@@ -35,7 +34,6 @@ drink_three_b = machine.Pin(21, machine.Pin.OUT) # this is temp. had to do for u
 drink_four_pump = machine.Pin(26, machine.Pin.OUT)
 
 drinkbot_serving = False
-
 
 def spout_down(): 
     spout.duty_u16(4700)
@@ -518,3 +516,5 @@ try:
         
 except Exception:
     setup_mode()  
+
+server.run()
