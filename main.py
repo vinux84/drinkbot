@@ -15,6 +15,7 @@ WIFI_FILE = "wifi.json"
 IP_ADDRESS = "ip.json"
 DRINKS = "drink.json"
 WIFI_MAX_ATTEMPTS = 3
+drinkbot_serving = False
 
 ir_sensor = machine.Pin(14, machine.Pin.IN, machine.Pin.PULL_DOWN)
 
@@ -33,7 +34,6 @@ drink_three_pump = machine.Pin(20, machine.Pin.OUT)
 drink_three_b = machine.Pin(21, machine.Pin.OUT) # this is temp. had to do for using motor controller. need relays for pumps
 drink_four_pump = machine.Pin(26, machine.Pin.OUT)
 
-drinkbot_serving = False
 
 def spout_down(): 
     spout.duty_u16(4700)
@@ -187,13 +187,10 @@ def button_poll():                             # button IRQ from another pico
                     
 _thread.start_new_thread(button_poll, ())
 
-
-
 def machine_reset():
     utime.sleep(1)
     print("Resetting...")
     machine.reset()
-
 
 def setup_mode():                                                             # setup mode to grab users wifi credentials
     print("Entering setup mode...")
@@ -220,7 +217,6 @@ def setup_mode():                                                             # 
 
         return "Not found.", 404
 
-
     server.add_route("/", handler = ap_index, methods = ["GET"])
     server.add_route("/configure", handler = ap_configure, methods = ["POST"])
     server.set_callback(ap_catch_all)
@@ -228,7 +224,6 @@ def setup_mode():                                                             # 
     ap = access_point(AP_NAME)
     ip = ap.ifconfig()[0]
     dns.run_catchall(ip)
-
 
 def display_ip():                                                             # displays a page with the IP address (so user can see) no mDNS working for now, then reboots device
     print("Entering display IP mode")
@@ -261,11 +256,9 @@ def display_ip():                                                             # 
     ip = ap.ifconfig()[0]
     dns.run_catchall(ip)
 
-
 def application_mode():                                                     # Starts web server and all its functions
     print("Entering application mode.")
       
-    
     def app_index(request):
         save_alert = None
         
@@ -295,7 +288,6 @@ def application_mode():                                                     # St
                                drink_two_state=drinktwos, drink_two_name=drinktwon, drink_two_amount=drinktwoa,
                                drink_three_state=drinkthrees, drink_three_name=drinkthreen, drink_three_amount=drinkthreea,
                                drink_four_state=drinkfours, drink_four_name=drinkfourn, drink_four_amount=drinkfoura)
-    
     
     def edit_drinks(request):                            # load current drinks to edit page, so drinks can be edited. 
         drink_one_toggle = None
@@ -443,7 +435,6 @@ def application_mode():                                                     # St
     def app_catch_all(request):
         return "Not found.", 404
 
-
     server.add_route("/", handler = app_index, methods = ["GET"])        # All methods for server
     server.add_route("/", handler = app_index, methods = ["POST"])
     
@@ -461,7 +452,6 @@ def application_mode():                                                     # St
     server.add_route("/drink_three_off", handler = drink_three_off, methods = ["GET"])
     server.add_route("/drink_three_prime", handler = drink_three_prime, methods = ["GET"])
     server.add_route("/drink_three", handler = drink_three, methods = ["GET"])
-    
     
     server.add_route("/drink_four_on", handler = drink_four_on, methods = ["GET"])
     server.add_route("/drink_four_off", handler = drink_four_off, methods = ["GET"])
