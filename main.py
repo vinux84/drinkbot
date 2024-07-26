@@ -18,6 +18,10 @@ IP_ADDRESS = "ip.json"
 DRINKS = "drinks.json"
 WIFI_MAX_ATTEMPTS = 3
 
+account_sid = 'Twilo account sid'
+auth_token = 'Twilio auth token'
+sender_num = 'twilio phone number'
+
 def send_sms(recipient, sender, message, auth_token, account_sid):
     headers = {'Content-Type': 'application/x-www-form-urlencoded'}
     data = "To={}&From={}&Body={}".format(recipient,sender,message)
@@ -451,7 +455,7 @@ try:
                         wifi_info = json.load(f)
                         recipient_num = '+1' + wifi_info["phone_number"]
                     message = f"DrinkBot IP Address has been updated. Please click here http://{ip_address} to access your DrinkBot from now on."    
-                    # send_sms(recipient_num, sender_num, message, auth_token, account_sid)
+                    send_sms(recipient_num, sender_num, message, auth_token, account_sid)
                     application_mode()
         except Exception: 
             print("Drinkbot online, sending text message")                        
@@ -462,7 +466,7 @@ try:
                 wifi_info = json.load(f)
                 recipient_num = '+1' + wifi_info["phone_number"]
             message = f"Congratulations on your new DrinkBot! Please click here http://{ip_address} to access your DrinkBot."    
-            # send_sms(recipient_num, sender_num, message, auth_token, account_sid)
+            send_sms(recipient_num, sender_num, message, auth_token, account_sid)
             application_mode()
     else:
         print("Bad wifi connection!")
