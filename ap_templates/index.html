@@ -1,23 +1,25 @@
 <!doctype html>
 <html lang="en">
-  <head>
+<head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="color-scheme" content="light dark" />
     <title>DrinkBot</title>
-  </head>
+</head>
     <body>
-        <h1>DrinkBot</h1>
+        <h1>DrinkBot Setup:</h1>
         <p>Let's configure DrinkBot to connect to your local wifi...</p>
         <form action="/configure" method="POST" autocomplete="off" autocapitalize="none">
             <label for="ssid">Network Name:</label><br>
-            <input type="text" id="ssid" name="ssid" required><br>
+            <input type="text" id="ssid" name="ssid" style="font-size:13pt; height: 40px;" required><br><br>
             <label for="password">Password:</label><br>
-            <input type="text" id="password" name="password" required><br><br>
-            <p>Please enter your 10 digit phone number so you can access the DrinkBot once it's online. The DrinkBot will send you a link through a text message.</p>
+            <input type="password" id="password" name="password" style="font-size:13pt; height: 40px;" required><br><br>
+            <p>DrinkBot also needs your 10 digit mobile phone number so you can access it once it's online...</p><br>
             <label for="phone_number">Phone Number:</label><br>
-            <input type="number" min="10" max="10" id="phone_number" name="phone_number" required><br><br>
-            <button>Save</button>
+            <input type="text" pattern="[0-9]{10}" id="phone_number" name="phone_number" style="font-size:13pt; height: 40px;" required><br><br><br>
+            <div>
+            <button style="width: 150px; height: 50px; background-color:#14A44D; border-radius: 8px; margin: 0 auto; display: block; border-style: none; font-size: 17px;">Save</button>
+            </div>
         </form>
     </body>
 </html>
