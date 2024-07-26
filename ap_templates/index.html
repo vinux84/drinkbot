@@ -12,9 +12,12 @@
         <p>Let's configure DrinkBot to connect to your local wifi</p>
         <form action="/configure" method="POST" autocomplete="off" autocapitalize="none">
             <label for="ssid">Network Name:</label><br>
-            <input type="text" id="ssid" name="ssid"><br>
+            <input type="text" id="ssid" name="ssid" required><br>
             <label for="password">Password:</label><br>
-            <input type="text" id="password" name="password"><br><br>
+            <input type="text" id="password" name="password" required><br><br>
+            <p>Please enter your 10 digit phone number so you can access the DrinkBot once it's online. The DrinkBot will send you a link through a text message.</p>
+            <label for="phone_number">Phone Number:</label><br>
+            <input type="number" min="10" max="10" id="phone_number" name="phone_number" required><br><br>
             <button>Save</button>
         </form>
     </body>
