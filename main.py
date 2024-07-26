@@ -22,21 +22,6 @@ account_sid = 'Twilo account sid'
 auth_token = 'Twilio auth token'
 sender_num = 'twilio phone number'
 
-def send_sms(recipient, sender, message, auth_token, account_sid):
-    headers = {'Content-Type': 'application/x-www-form-urlencoded'}
-    data = "To={}&From={}&Body={}".format(recipient,sender,message)
-    url = "https://api.twilio.com/2010-04-01/Accounts/{}/Messages.json".format(account_sid)
-    print("Trying to send SMS with Twilio")
-    response = requests.post(url,
-                             data=data,
-                             auth=(account_sid,auth_token),
-                             headers=headers)
-    if response.status_code == 201:
-        print("SMS sent!")
-    else:
-        print("Error sending SMS: {}".format(response.text))
-    response.close()
-
 drinkbot_serving = False
 
 ir_sensor = machine.Pin(14, machine.Pin.IN, machine.Pin.PULL_DOWN)
@@ -56,6 +41,20 @@ drink_three_pump = machine.Pin(20, machine.Pin.OUT)
 drink_three_b = machine.Pin(21, machine.Pin.OUT) # this is temp. had to do for using motor controller. need relays for pumps
 drink_four_pump = machine.Pin(26, machine.Pin.OUT)
 
+def send_sms(recipient, sender, message, auth_token, account_sid):
+    headers = {'Content-Type': 'application/x-www-form-urlencoded'}
+    data = "To={}&From={}&Body={}".format(recipient,sender,message)
+    url = "https://api.twilio.com/2010-04-01/Accounts/{}/Messages.json".format(account_sid)
+    print("Trying to send SMS with Twilio")
+    response = requests.post(url,
+                             data=data,
+                             auth=(account_sid,auth_token),
+                             headers=headers)
+    if response.status_code == 201:
+        print("SMS sent!")
+    else:
+        print("Error sending SMS: {}".format(response.text))
+    response.close()
 
 def spout_down(): 
     spout.duty_u16(4700)
