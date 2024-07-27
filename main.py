@@ -38,8 +38,7 @@ spout.freq(50)
 drink_one_pump = machine.Pin(18, machine.Pin.OUT)
 drink_two_pump = machine.Pin(19, machine.Pin.OUT)
 drink_three_pump = machine.Pin(20, machine.Pin.OUT)
-drink_three_b = machine.Pin(21, machine.Pin.OUT) # this is temp. had to do for using motor controller. need relays for pumps
-drink_four_pump = machine.Pin(26, machine.Pin.OUT)
+drink_four_pump = machine.Pin(21, machine.Pin.OUT)
 
 def send_sms(recipient, sender, message, auth_token, account_sid):
     headers = {'Content-Type': 'application/x-www-form-urlencoded'}
