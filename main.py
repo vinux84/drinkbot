@@ -148,7 +148,6 @@ reset()                                           # Home machine to default posi
 def find_time(ounces):
     one_second = 1              
     time = ounces / one_second
-    print(f'Dispensing for {time} seconds')
     return time
         
 def quantity_calculator(quantity):
@@ -344,6 +343,7 @@ def application_mode():                                                     # St
     def drink_one(request):
         type_drink = 'one'                                         
         one_drink_amount = get_drink_amount(type_drink)
+        print(f'Dispensing Drink 1 for {one_drink_amount} seconds')
         main_dispense(type_drink, one_drink_amount)  
         return 'OK'
     
@@ -364,6 +364,7 @@ def application_mode():                                                     # St
     def drink_two(request):                                            # Drink two implementation when pour buttion is pressed for Drink two
         type_drink = 'two'                                         
         two_drink_amount = get_drink_amount(type_drink)
+        print(f'Dispensing Drink 2 for {two_drink_amount} seconds')
         main_dispense(type_drink, two_drink_amount)  
         return 'OK'
     
@@ -384,6 +385,7 @@ def application_mode():                                                     # St
     def drink_three(request):                                          # Drink three implementation when pour buttion is pressed on Drink three
         type_drink = 'three'                                         
         three_drink_amount = get_drink_amount(type_drink)
+        print(f'Dispensing Drink 3 for {three_drink_amount} seconds')
         main_dispense(type_drink, three_drink_amount) 
         return 'OK'
     
@@ -404,6 +406,7 @@ def application_mode():                                                     # St
     def drink_four(request):                                           # Drink four implementation when pour buttion is pressed on Drink four
         type_drink = 'four'                                         
         four_drink_amount = get_drink_amount(type_drink)
+        print(f'Dispensing Drink 4 for {four_drink_amount} seconds')
         main_dispense(type_drink, four_drink_amount)
         return 'OK'
     
