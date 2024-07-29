@@ -127,6 +127,8 @@ def main_dispense(type_drink, drink_duration):
                             server_stop()
                             u -= 1
                             drinkbot_serving = False
+    else:
+        print("Please place cup on holder first...")
                                            
 def reset():
     pump_off(drink_one_pump)
@@ -337,7 +339,7 @@ def application_mode():                                                     # St
     def drink_one_prime(request):   # prime lines
         type_drink = 'one'       
         print("priming drink 1")
-        main_dispense(type_drink, 3)
+        main_dispense(type_drink, 4)
         return 'OK'
     
     def drink_one(request):
@@ -358,7 +360,7 @@ def application_mode():                                                     # St
     def drink_two_prime(request): # prime line
         type_drink = 'two'
         print("priming drink 2")
-        main_dispense(type_drink, 3)
+        main_dispense(type_drink, 4)
         return 'OK'
     
     def drink_two(request):                                            # Drink two implementation when pour buttion is pressed for Drink two
@@ -379,7 +381,7 @@ def application_mode():                                                     # St
     def drink_three_prime(request): # prime lines
         type_drink = 'three'  
         print("priming drink 3")
-        main_dispense(type_drink, 3)
+        main_dispense(type_drink, 4)
         return 'OK'
     
     def drink_three(request):                                          # Drink three implementation when pour buttion is pressed on Drink three
@@ -400,7 +402,7 @@ def application_mode():                                                     # St
     def drink_four_prime(request): # prime lines
         type_drink = 'four'
         print("priming drink 4")
-        main_dispense(type_drink, 3)
+        main_dispense(type_drink, 4)
         return 'OK'
     
     def drink_four(request):                                           # Drink four implementation when pour buttion is pressed on Drink four
