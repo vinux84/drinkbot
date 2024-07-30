@@ -415,12 +415,13 @@ def application_mode():                                                     # St
     def app_reset(request):                                             # Resetting DrinkBot settings
         os.remove(WIFI_FILE)
         os.remove(IP_ADDRESS)
+        os.remove(DRINKS)
         drink_data = {"drink_one_state": "disabled", "drink_one_name": "Drink 1", "drink_one_amount": "1.5 oz. (Single)",
                       "drink_two_state": "disabled", "drink_two_name": "Drink 2", "drink_two_amount": "1.5 oz. (Single)",
                       "drink_three_state": "disabled", "drink_three_name": "Drink 3", "drink_three_amount": "1.5 oz. (Single)",
                       "drink_four_state": "disabled", "drink_four_name": "Drink 4", "drink_four_amount": "1.5 oz. (Single)"}
-        for key, value in drink_data.items():
-            update_json(key, value)  
+        with open(DRINKS, "w") as f:
+            json.dump(drink_data, f) 
                                                     
         _thread.start_new_thread(machine_reset, ())                      # Reboot from new thread to start the beginning process
         return render_template(f"{APP_TEMPLATE_PATH}/reset.html", access_point_ssid = AP_NAME)
