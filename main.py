@@ -486,7 +486,7 @@ try:
                     with open(WIFI_FILE) as f:
                         wifi_info = json.load(f)
                         recipient_num = '+1' + wifi_info["phone_number"]
-                    message = f"Hello! DrinkBot here again, \nclick http://{ip_address} to access me from now on."    
+                    message = f"Hello! DrinkBot here again... \nclick http://{ip_address} to access me from now on."    
                     send_sms(recipient_num, sender_num, message, auth_token, account_sid)
                     application_mode()
         except Exception: 
