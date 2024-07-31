@@ -18,11 +18,12 @@ IP_ADDRESS = "ip.json"
 DRINKS = "drinks.json"
 WIFI_MAX_ATTEMPTS = 3
 
-account_sid = 'Twilo account sid'
+account_sid = 'Twilio account sid'
 auth_token = 'Twilio auth token'
-sender_num = 'twilio phone number'
+sender_num = 'Twilio phone number'
 
 drinkbot_serving = False
+running_poll_thread = False
 
 ir_sensor = machine.Pin(14, machine.Pin.IN, machine.Pin.PULL_DOWN)
 
@@ -178,10 +179,12 @@ def update_json(key, value):                        # Update drinks in json file
     with open(DRINKS, 'w') as f:
         f.write(json.dumps(drink_db))
 
-def button_poll():                             # button IRQ from another pico
+def button_poll():
+    global running_poll_thread
+    running_poll_thread = True                            # button IRQ from another pico
     uart = UART(1, baudrate=9600, rx=Pin(5))
     uart.init(bits=8, parity=None, stop=2)
-    while True:
+    while running_poll_thread:
         if uart.any(): 
             data = uart.read() 
             if data == b'1':
@@ -208,7 +211,7 @@ def button_poll():                             # button IRQ from another pico
 _thread.start_new_thread(button_poll, ())
 
 def machine_reset():
-    utime.sleep(1)
+    utime.sleep(3)
     print("Resetting...")
     machine.reset()
 
@@ -227,7 +230,9 @@ def setup_mode():                                                             # 
         with open(WIFI_FILE, "w") as f:
             json.dump(request.form, f)
             f.close()
-                                                                               # Reboot from new thread after we have responded to the user.
+        
+        global running_poll_thread
+        running_poll_thread = False                                                                       # Reboot from new thread after we have responded to the user.
         _thread.start_new_thread(machine_reset, ())
         return render_template(f"{AP_TEMPLATE_PATH}/configured.html", ssid = request.form["ssid"])
         
@@ -422,7 +427,9 @@ def application_mode():                                                     # St
                       "drink_four_state": "disabled", "drink_four_name": "Drink 4", "drink_four_amount": "1.5 oz. (Single)"}
         with open(DRINKS, "w") as f:
             json.dump(drink_data, f) 
-                                                    
+
+        global running_poll_thread
+        running_poll_thread = False                                            
         _thread.start_new_thread(machine_reset, ())                      # Reboot from new thread to start the beginning process
         return render_template(f"{APP_TEMPLATE_PATH}/reset.html", access_point_ssid = AP_NAME)
 
