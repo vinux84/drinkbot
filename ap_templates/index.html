@@ -19,9 +19,21 @@
             <input type="text" id="ssid" name="ssid" placeholder="Network Name" style="font-size:13pt; height: 40px;" required><br><br>
             <label for="password"></label><br>
             <input type="password" id="password" name="password" placeholder="Password" style="font-size:13pt; height: 40px;" required><br><br>
+            <input type="checkbox" onclick="myFunction()">Show Password<br/><br/>
             <label for="phone_number"></label><br>
             <input type="text" pattern="[0-9]{10}" id="phone_number" name="phone_number" placeholder="10-Digit Cell Number" style="font-size:13pt; height: 40px;" required><br><br><br>
             <button style="width: 150px; height: 50px; background-color:#3B71CA; border-radius: 8px; margin: 0 auto; display: block; border-style: none; font-size: 17px; color:white;">Save</button>
         </form>
+    
+    <script>
+        function myFunction() {
+          var x = document.getElementById("password");
+          if (x.type === "password") {
+            x.type = "text";
+          } else {
+            x.type = "password";
+          }
+        }
+    </script>
     </body>
 </html>
