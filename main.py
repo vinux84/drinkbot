@@ -22,7 +22,7 @@ auth_token = 'Twilio auth token'
 sender_num = 'Twilio phone number'
 
 drinkbot_serving = False
-running_poll_thread = False
+running_thread = False
 
 ir_sensor = machine.Pin(14, machine.Pin.IN, machine.Pin.PULL_DOWN)
 
@@ -39,11 +39,6 @@ drink_one_pump = machine.Pin(18, machine.Pin.OUT)
 drink_two_pump = machine.Pin(19, machine.Pin.OUT)
 drink_three_pump = machine.Pin(20, machine.Pin.OUT)
 drink_four_pump = machine.Pin(21, machine.Pin.OUT)
-
-drink_one_button = machine.Pin(1, machine.Pin.IN, machine.Pin.PULL_DOWN) 
-drink_two_button = machine.Pin(2, machine.Pin.IN, machine.Pin.PULL_DOWN)
-drink_three_button = machine.Pin(3, machine.Pin.IN, machine.Pin.PULL_DOWN)  
-drink_four_button = machine.Pin(4, machine.Pin.IN, machine.Pin.PULL_DOWN)
 
 def send_sms(recipient, sender, message, auth_token, account_sid):
     headers = {'Content-Type': 'application/x-www-form-urlencoded'}
@@ -184,6 +179,10 @@ def update_json(key, value):                        # Update drinks in json file
         f.write(json.dumps(drink_db))
 
 def polling():
+    drink_one_button = machine.Pin(1, machine.Pin.IN, machine.Pin.PULL_DOWN) 
+    drink_two_button = machine.Pin(2, machine.Pin.IN, machine.Pin.PULL_DOWN)
+    drink_three_button = machine.Pin(3, machine.Pin.IN, machine.Pin.PULL_DOWN)  
+    drink_four_button = machine.Pin(4, machine.Pin.IN, machine.Pin.PULL_DOWN)
     global running_thread
     running_thread = True
     button_one = 0
@@ -255,8 +254,8 @@ def setup_mode():                                                             # 
             json.dump(request.form, f)
             f.close()
         
-        global running_poll_thread
-        running_poll_thread = False                                                                       # Reboot from new thread after we have responded to the user.
+        global running_thread
+        running_thread = False                                                                       # Reboot from new thread after we have responded to the user.
         _thread.start_new_thread(machine_reset, ())
         return render_template(f"{AP_TEMPLATE_PATH}/configured.html", ssid = request.form["ssid"])
         
@@ -452,8 +451,8 @@ def application_mode():                                                     # St
         with open(DRINKS, "w") as f:
             json.dump(drink_data, f) 
 
-        global running_poll_thread
-        running_poll_thread = False                                            
+        global running_thread
+        running_thread = False                                            
         _thread.start_new_thread(machine_reset, ())                      # Reboot from new thread to start the beginning process
         return render_template(f"{APP_TEMPLATE_PATH}/reset.html", access_point_ssid = AP_NAME)
 
