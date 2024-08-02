@@ -32,7 +32,7 @@ limit_switch_bottom = machine.Pin(10, machine.Pin.IN, machine.Pin.PULL_UP)
 server_motor_down = machine.Pin(16, machine.Pin.OUT)
 server_motor_up = machine.Pin(17, machine.Pin.OUT)
 
-spout = machine.PWM(machine.Pin(6))
+spout = machine.PWM(machine.Pin(8))
 spout.freq(50)
 
 drink_one_pump = machine.Pin(18, machine.Pin.OUT)
@@ -40,10 +40,10 @@ drink_two_pump = machine.Pin(19, machine.Pin.OUT)
 drink_three_pump = machine.Pin(20, machine.Pin.OUT)
 drink_four_pump = machine.Pin(21, machine.Pin.OUT)
 
-drink_one_button = machine.Pin(1, machine.Pin.IN, machine.Pin.PULL_DOWN) 
+drink_one_button = machine.Pin(0, machine.Pin.IN, machine.Pin.PULL_DOWN) 
 drink_two_button = machine.Pin(2, machine.Pin.IN, machine.Pin.PULL_DOWN)
-drink_three_button = machine.Pin(3, machine.Pin.IN, machine.Pin.PULL_DOWN)  
-drink_four_button = machine.Pin(4, machine.Pin.IN, machine.Pin.PULL_DOWN)
+drink_three_button = machine.Pin(4, machine.Pin.IN, machine.Pin.PULL_DOWN)  
+drink_four_button = machine.Pin(6, machine.Pin.IN, machine.Pin.PULL_DOWN)
 
 def send_sms(recipient, sender, message, auth_token, account_sid):
     headers = {'Content-Type': 'application/x-www-form-urlencoded'}
