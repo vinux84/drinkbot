@@ -40,6 +40,11 @@ drink_two_pump = machine.Pin(19, machine.Pin.OUT)
 drink_three_pump = machine.Pin(20, machine.Pin.OUT)
 drink_four_pump = machine.Pin(21, machine.Pin.OUT)
 
+drink_one_button = machine.Pin(1, machine.Pin.IN, machine.Pin.PULL_DOWN) 
+drink_two_button = machine.Pin(2, machine.Pin.IN, machine.Pin.PULL_DOWN)
+drink_three_button = machine.Pin(3, machine.Pin.IN, machine.Pin.PULL_DOWN)  
+drink_four_button = machine.Pin(4, machine.Pin.IN, machine.Pin.PULL_DOWN)
+
 def send_sms(recipient, sender, message, auth_token, account_sid):
     headers = {'Content-Type': 'application/x-www-form-urlencoded'}
     data = "To={}&From={}&Body={}".format(recipient,sender,message)
@@ -179,51 +184,44 @@ def update_json(key, value):                        # Update drinks in json file
         f.write(json.dumps(drink_db))
 
 def polling():
-    drink_one_button = machine.Pin(1, machine.Pin.IN, machine.Pin.PULL_DOWN) 
-    drink_two_button = machine.Pin(2, machine.Pin.IN, machine.Pin.PULL_DOWN)
-    drink_three_button = machine.Pin(3, machine.Pin.IN, machine.Pin.PULL_DOWN)  
-    drink_four_button = machine.Pin(4, machine.Pin.IN, machine.Pin.PULL_DOWN)
     global running_thread
     running_thread = True
     button_presses = 0
     debounce = 0
     while running_thread:
+        utime.sleep(.10)
         gc.collect()
         if ((drink_one_button.value() is 1) and (utime.ticks_ms()-debounce) > 500):
             button_presses+=1
             debounce=utime.ticks_ms()
             if button_presses == 1:
                 print("button one pressed")
-                type_drink = 'one'
-                one_drink_amount_button = get_drink_amount(type_drink)
-                main_dispense(type_drink, one_drink_amount_button)
+                one_drink_a = get_drink_amount('one')
+                main_dispense('one', one_drink_a)
                 button_presses = 0
         elif ((drink_two_button.value() is 1) and (utime.ticks_ms()-debounce) > 500):
             button_presses+=1
             debounce=utime.ticks_ms()
             if button_presses == 1:
                 print("button two pressed")
-                type_drink = 'two'
-                two_drink_amount_button = get_drink_amount(type_drink)
-                main_dispense(type_drink, two_drink_amount_button)
+                two_drink_a = get_drink_amount('two')
+                main_dispense('two', two_drink_a)
                 button_presses = 0
         elif ((drink_three_button.value() is 1) and (utime.ticks_ms()-debounce) > 500):
             button_presses+=1
             debounce=utime.ticks_ms()
             if button_presses == 1:
                 print("button three pressed")
-                type_drink = 'three'
-                three_drink_amount_button = get_drink_amount(type_drink)
-                main_dispense(type_drink, three_drink_amount_button)
+                three_drink_a = get_drink_amount('three')
+                main_dispense('three', three_drink_a)
                 button_presses = 0
         elif ((drink_four_button.value() is 1) and (utime.ticks_ms()-debounce) > 500):
             button_presses+=1
             debounce=utime.ticks_ms()
             if button_presses == 1:
                 print("button four pressed")
-                type_drink = 'four'
-                four_drink_amount_button = get_drink_amount(type_drink)
-                main_dispense(type_drink, four_drink_amount_button)
+                four_drink_a = get_drink_amount('four')
+                main_dispense('four', four_drink_a)
                 button_presses = 0
                     
 _thread.start_new_thread(polling, ())
