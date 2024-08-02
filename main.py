@@ -1,6 +1,5 @@
 from phew import access_point, connect_to_wifi, is_connected_to_wifi, dns, server
 from phew.template import render_template
-from machine import Pin, UART
 import json
 import machine
 import os
@@ -40,6 +39,11 @@ drink_one_pump = machine.Pin(18, machine.Pin.OUT)
 drink_two_pump = machine.Pin(19, machine.Pin.OUT)
 drink_three_pump = machine.Pin(20, machine.Pin.OUT)
 drink_four_pump = machine.Pin(21, machine.Pin.OUT)
+
+drink_one_button = machine.Pin(1, machine.Pin.IN, machine.Pin.PULL_DOWN) 
+drink_two_button = machine.Pin(2, machine.Pin.IN, machine.Pin.PULL_DOWN)
+drink_three_button = machine.Pin(3, machine.Pin.IN, machine.Pin.PULL_DOWN)  
+drink_four_button = machine.Pin(4, machine.Pin.IN, machine.Pin.PULL_DOWN)
 
 def send_sms(recipient, sender, message, auth_token, account_sid):
     headers = {'Content-Type': 'application/x-www-form-urlencoded'}
@@ -179,36 +183,56 @@ def update_json(key, value):                        # Update drinks in json file
     with open(DRINKS, 'w') as f:
         f.write(json.dumps(drink_db))
 
-def button_poll():
-    global running_poll_thread
-    running_poll_thread = True                            # button IRQ from another pico
-    uart = UART(1, baudrate=9600, rx=Pin(5))
-    uart.init(bits=8, parity=None, stop=2)
-    while running_poll_thread:
-        if uart.any(): 
-            data = uart.read() 
-            if data == b'1':
-                print('drink one')
+def polling():
+    global running_thread
+    running_thread = True
+    button_one = 0
+    button_two = 0
+    button_three = 0
+    button_four = 0
+    debounce_one = 0
+    debounce_two = 0
+    debounce_three = 0
+    debounce_four = 0
+    while running_thread:
+        if ((drink_one_button.value() is 1) and (utime.ticks_ms()-debounce_one) > 500):
+            button_one+=1
+            debounce_one=utime.ticks_ms()
+            if button_one == 1:
+                print("button one pressed")
                 type_drink = 'one'
                 one_drink_amount_button = get_drink_amount(type_drink)
                 main_dispense(type_drink, one_drink_amount_button)
-            elif data == b'2':
-                print('drink two')
+                button_one = 0
+        elif ((drink_two_button.value() is 1) and (utime.ticks_ms()-debounce_two) > 500):
+            button_two+=1
+            debounce_two=utime.ticks_ms()
+            if button_two == 1:
+                print("button two pressed")
                 type_drink = 'two'
                 two_drink_amount_button = get_drink_amount(type_drink)
                 main_dispense(type_drink, two_drink_amount_button)
-            elif data == b'3':
-                print('drink three')
+                button_two = 0
+        elif ((drink_three_button.value() is 1) and (utime.ticks_ms()-debounce_three) > 500):
+            button_three+=1
+            debounce_three=utime.ticks_ms()
+            if button_three == 1:
+                print("button three pressed")
                 type_drink = 'three'
                 three_drink_amount_button = get_drink_amount(type_drink)
                 main_dispense(type_drink, three_drink_amount_button)
-            elif data == b'4':
-                print('drink four')
+                button_three = 0
+        elif ((drink_four_button.value() is 1) and (utime.ticks_ms()-debounce_four) > 500):
+            button_four+=1
+            debounce_four=utime.ticks_ms()
+            if button_four == 1:
+                print("button four pressed")
                 type_drink = 'four'
                 four_drink_amount_button = get_drink_amount(type_drink)
                 main_dispense(type_drink, four_drink_amount_button)
+                button_four = 0
                     
-_thread.start_new_thread(button_poll, ())
+_thread.start_new_thread(polling, ())
 
 def machine_reset():
     utime.sleep(3)
