@@ -188,6 +188,7 @@ def polling():
     button_presses = 0
     debounce = 0
     while running_thread:
+        gc.collect()
         if ((drink_one_button.value() is 1) and (utime.ticks_ms()-debounce) > 500):
             button_presses+=1
             debounce=utime.ticks_ms()
