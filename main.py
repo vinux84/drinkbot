@@ -190,7 +190,6 @@ def polling():
     debounce = 0
     while running_thread:
         utime.sleep(.10)
-        gc.collect()
         if ((drink_one_button.value() is 1) and (utime.ticks_ms()-debounce) > 500):
             button_presses+=1
             debounce=utime.ticks_ms()
@@ -223,8 +222,6 @@ def polling():
                 four_drink_a = get_drink_amount('four')
                 main_dispense('four', four_drink_a)
                 button_presses = 0
-                    
-_thread.start_new_thread(polling, ())
 
 def machine_reset():
     utime.sleep(3)
@@ -248,7 +245,8 @@ def setup_mode():                                                             # 
             f.close()
         
         global running_thread
-        running_thread = False                                                                       # Reboot from new thread after we have responded to the user.
+        running_thread = False     
+        utime.sleep(1)                                                                  # Reboot from new thread after we have responded to the user.
         _thread.start_new_thread(machine_reset, ())
         return render_template(f"{AP_TEMPLATE_PATH}/configured.html", ssid = request.form["ssid"])
         
@@ -445,7 +443,8 @@ def application_mode():                                                     # St
             json.dump(drink_data, f) 
 
         global running_thread
-        running_thread = False                                            
+        running_thread = False   
+        utime.sleep(1)                                         
         _thread.start_new_thread(machine_reset, ())                      # Reboot from new thread to start the beginning process
         return render_template(f"{APP_TEMPLATE_PATH}/reset.html", access_point_ssid = AP_NAME)
 
@@ -530,5 +529,7 @@ try:
         machine_reset()    
 except Exception:
     setup_mode()  
+
+_thread.start_new_thread(polling, ())
 
 server.run()
