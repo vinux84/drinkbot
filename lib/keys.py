@@ -1,0 +1,5 @@
+MQTT_CLIENT_KEY = "mqtt client key"
+MQTT_CLIENT_CERT = "mqtt client cert"
+MQTT_BROKER = "mqtt broker"
+MQTT_BROKER_CA = "mqtt broker ca"
+MQTT_TOPIC = "pico"
