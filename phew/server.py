@@ -1,10 +1,13 @@
-import uasyncio, os, time
+import uasyncio, os, time, device, machine, ssl, ubinascii
+from phew import is_connected_to_wifi
+from lib import keys, simple
 from . import logging
 
 _routes = []
 catchall_handler = None
 loop = uasyncio.get_event_loop()
 
+listen_counter = 0
 
 def file_exists(filename):
   try:
@@ -345,10 +348,70 @@ def redirect(url, status = 301):
 def serve_file(file):
   return FileResponse(file)
 
+# MQTT Communication
+def read_pem(file):
+    with open(file, "r") as input:
+        text = input.read().strip()
+        split_text = text.split("\n")
+        base64_text = "".join(split_text[1:-1])
+        return ubinascii.a2b_base64(base64_text)
 
+def mqtt_callback(topic, msg):
+    topic_str = topic.decode()
+    msg_str = msg.decode().strip('"')
+    print(f"RX: {topic_str}\t{msg_str}")
+    if hasattr(device, msg_str):
+        getattr(device, msg_str)()
+
+def mqtt_setup():
+    mqtt_client = simple.MQTTClient(
+        client_id = ubinascii.hexlify(machine.unique_id()),
+        server = keys.MQTT_BROKER,
+        ssl = True,
+        ssl_params = {
+            "key": read_pem(keys.MQTT_CLIENT_KEY),
+            "cert": read_pem(keys.MQTT_CLIENT_CERT),
+            "server_hostname": keys.MQTT_BROKER,
+            "cert_reqs": ssl.CERT_REQUIRED,
+            "cadata": read_pem(keys.MQTT_BROKER_CA),
+        },
+    )
+    mqtt_client.set_callback(mqtt_callback)
+    return mqtt_client
+
+def mqtt_connect(client):
+    print("Connecting to MQTT Broker ...")
+    client.connect()
+    client.subscribe(keys.MQTT_TOPIC)
+    print("Connected to MQTT Broker\n")
+
+def mqtt_listen(client):
+    global listen_counter
+    client.check_msg()
+    listen_counter = (listen_counter + 1) % 30
+    if (listen_counter == 0):
+        client.publish(keys.MQTT_TOPIC, "keep_alive")
+
+def mqtt_disconnect(client):
+    print("Disconnecting from MQTT Broker ...")
+    client.disconnect()
+    print("Disconnected from MQTT Broker\n")
+
+async def mqtt_poll():
+    global listen_counter
+    if is_connected_to_wifi():
+        mqtt_client = mqtt_setup()
+        mqtt_connect(mqtt_client)
+        print(f"Listening to {keys.MQTT_TOPIC} ...")
+        while is_connected_to_wifi():
+            mqtt_listen(mqtt_client)
+            await uasyncio.sleep(1)
+
+# run server and mqtt poll if online
 def run(host = "0.0.0.0", port = 80):
   logging.info("> starting web server on port {}".format(port))
   loop.create_task(uasyncio.start_server(_handle_request, host, port))
+  loop.create_task(mqtt_poll())
   loop.run_forever()
 
 def stop():
