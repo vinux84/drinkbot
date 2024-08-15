@@ -149,7 +149,7 @@ def get_drink_amount(drink_num):
         drink_duration = quantity_calculator(drink_amount)
         return drink_duration
 
-def update_json(key, value):                        
+def update_drinks(key, value):                        
     with open(DRINKS, 'r') as f:
         drink_db = json.load(f)
         drink_db[key]=value
