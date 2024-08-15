@@ -136,7 +136,7 @@ def application_mode():
         if request.form:                              
             for key, value in request.form.items():
                 if value != "":
-                    device.update_json(key, value)
+                    device.update_drinks(key, value)
             save_alert = 'on'
         
         with open(DRINKS) as f:                       
@@ -210,11 +210,11 @@ def application_mode():
                                drink_four_t=drink_four_toggle, drink_four_state=drinkfours, drink_four_name=drinkfourn, drink_four_amount=drinkfoura)
     
     def drink_one_on(request):                                 
-        device.update_json('drink_one_state', "on")
+        device.update_drinks('drink_one_state', "on")
         return 'OK'
     
     def drink_one_off(request):                                 
-        device.update_json('drink_one_state', "disabled")
+        device.update_drinks('drink_one_state', "disabled")
         return 'OK'
     
     def drink_one_prime(request):   
@@ -231,11 +231,11 @@ def application_mode():
         return 'OK'
     
     def drink_two_on(request):                                 
-        device.update_json('drink_two_state', "on")
+        device.update_drinks('drink_two_state', "on")
         return 'OK'
     
     def drink_two_off(request):                                 
-        device.update_json('drink_two_state', "disabled")
+        device.update_drinks('drink_two_state', "disabled")
         return 'OK'
     
     def drink_two_prime(request): 
@@ -252,11 +252,11 @@ def application_mode():
         return 'OK'
     
     def drink_three_on(request):                                 
-        device.update_json('drink_three_state', "on")
+        device.update_drinks('drink_three_state', "on")
         return 'OK'
     
     def drink_three_off(request):                                 
-        device.update_json('drink_three_state', "disabled")
+        device.update_drinks('drink_three_state', "disabled")
         return 'OK'
     
     def drink_three_prime(request): 
@@ -273,11 +273,11 @@ def application_mode():
         return 'OK'
     
     def drink_four_on(request):                                 
-        device.update_json('drink_four_state', "on")
+        device.update_drinks('drink_four_state', "on")
         return 'OK'
     
     def drink_four_off(request):                                 
-        device.update_json('drink_four_state', "disabled")
+        device.update_drinks('drink_four_state', "disabled")
         return 'OK'
     
     def drink_four_prime(request): 
