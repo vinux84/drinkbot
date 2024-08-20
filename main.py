@@ -1,6 +1,7 @@
 from phew import access_point, connect_to_wifi, is_connected_to_wifi, dns, server
 from phew.template import render_template
-from lib import device
+from lib.drink_bot import DrinkBot
+from lib import drink_bot
 import json
 import machine
 import os
@@ -18,9 +19,11 @@ IP_ADDRESS = "ip.json"
 DRINKS = "drinks.json"
 WIFI_MAX_ATTEMPTS = 3
 
-account_sid = 'twilio account sid'
-auth_token = 'twilio auth_token'
-sender_num = 'twilio sender_num'
+drinkbot = DrinkBot()
+
+account_sid = 'Twilio Account SID'
+auth_token = 'Twilio Auth Token'
+sender_num = 'Twilio Sender Number'
 
 running_thread = False
 
@@ -56,32 +59,32 @@ def polling():
             debounce=utime.ticks_ms()
             if button_presses == 1:
                 print("button one pressed")
-                one_drink_a = device.get_drink_amount('one')
-                device.dispense('one', one_drink_a)
+                one_drink_a = drink_bot.get_drink_amount('one')
+                drinkbot.dispense('one', one_drink_a)
                 button_presses = 0
         elif ((drink_two_button.value() is 1) and (utime.ticks_ms()-debounce) > 500):
             button_presses+=1
             debounce=utime.ticks_ms()
             if button_presses == 1:
                 print("button two pressed")
-                two_drink_a = device.get_drink_amount('two')
-                device.dispense('two', two_drink_a)
+                two_drink_a = drink_bot.get_drink_amount('two')
+                drinkbot.dispense('two', two_drink_a)
                 button_presses = 0
         elif ((drink_three_button.value() is 1) and (utime.ticks_ms()-debounce) > 500):
             button_presses+=1
             debounce=utime.ticks_ms()
             if button_presses == 1:
                 print("button three pressed")
-                three_drink_a = device.get_drink_amount('three')
-                device.dispense('three', three_drink_a)
+                three_drink_a = drink_bot.get_drink_amount('three')
+                drinkbot.dispense('three', three_drink_a)
                 button_presses = 0
         elif ((drink_four_button.value() is 1) and (utime.ticks_ms()-debounce) > 500):
             button_presses+=1
             debounce=utime.ticks_ms()
             if button_presses == 1:
                 print("button four pressed")
-                four_drink_a = device.get_drink_amount('four')
-                device.dispense('four', four_drink_a)
+                four_drink_a = drink_bot.get_drink_amount('four')
+                drinkbot.dispense('four', four_drink_a)
                 button_presses = 0
 
 def machine_reset():
@@ -136,7 +139,7 @@ def application_mode():
         if request.form:                              
             for key, value in request.form.items():
                 if value != "":
-                    device.update_drinks(key, value)
+                    drink_bot.update_drinks(key, value)
             save_alert = 'on'
         
         with open(DRINKS) as f:                       
@@ -209,88 +212,89 @@ def application_mode():
                                drink_three_t=drink_three_toggle, drink_three_state=drinkthrees, drink_three_name=drinkthreen, drink_three_amount=drinkthreea,
                                drink_four_t=drink_four_toggle, drink_four_state=drinkfours, drink_four_name=drinkfourn, drink_four_amount=drinkfoura)
     
+    
     def drink_one_on(request):                                 
-        device.update_drinks('drink_one_state', "on")
+        drink_bot.update_drinks('drink_one_state', "on")
         return 'OK'
     
     def drink_one_off(request):                                 
-        device.update_drinks('drink_one_state', "disabled")
+        drink_bot.update_drinks('drink_one_state', "disabled")
         return 'OK'
     
     def drink_one_prime(request):   
         type_drink = 'one'       
         print("priming drink 1")
-        device.dispense(type_drink, 4)
+        drinkbot.dispense(type_drink, 4)
         return 'OK'
     
     def drink_one(request):
         type_drink = 'one'                                         
-        one_drink_amount = device.get_drink_amount(type_drink)
+        one_drink_amount = drink_bot.get_drink_amount(type_drink)
         print(f'Dispensing Drink 1 for {one_drink_amount} seconds')
-        device.dispense(type_drink, one_drink_amount)  
+        drinkbot.dispense(type_drink, one_drink_amount)
         return 'OK'
     
     def drink_two_on(request):                                 
-        device.update_drinks('drink_two_state', "on")
+        drink_bot.update_drinks('drink_two_state', "on")
         return 'OK'
     
     def drink_two_off(request):                                 
-        device.update_drinks('drink_two_state', "disabled")
+        drink_bot.update_drinks('drink_two_state', "disabled")
         return 'OK'
     
     def drink_two_prime(request): 
         type_drink = 'two'
         print("priming drink 2")
-        device.dispense(type_drink, 4)
+        drinkbot.dispense(type_drink, 4)
         return 'OK'
     
     def drink_two(request):                                            
         type_drink = 'two'                                         
-        two_drink_amount = device.get_drink_amount(type_drink)
+        two_drink_amount = drink_bot.get_drink_amount(type_drink)
         print(f'Dispensing Drink 2 for {two_drink_amount} seconds')
-        device.dispense(type_drink, two_drink_amount)  
+        drinkbot.dispense(type_drink, two_drink_amount)  
         return 'OK'
     
     def drink_three_on(request):                                 
-        device.update_drinks('drink_three_state', "on")
+        drink_bot.update_drinks('drink_three_state', "on")
         return 'OK'
     
     def drink_three_off(request):                                 
-        device.update_drinks('drink_three_state', "disabled")
+        drink_bot.update_drinks('drink_three_state', "disabled")
         return 'OK'
     
     def drink_three_prime(request): 
         type_drink = 'three'  
         print("priming drink 3")
-        device.dispense(type_drink, 4)
+        drinkbot.dispense(type_drink, 4)
         return 'OK'
     
     def drink_three(request):                                          
         type_drink = 'three'                                         
-        three_drink_amount = device.get_drink_amount(type_drink)
+        three_drink_amount = drink_bot.get_drink_amount(type_drink)
         print(f'Dispensing Drink 3 for {three_drink_amount} seconds')
-        device.dispense(type_drink, three_drink_amount) 
+        drinkbot.dispense(type_drink, three_drink_amount) 
         return 'OK'
     
     def drink_four_on(request):                                 
-        device.update_drinks('drink_four_state', "on")
+        drink_bot.update_drinks('drink_four_state', "on")
         return 'OK'
     
     def drink_four_off(request):                                 
-        device.update_drinks('drink_four_state', "disabled")
+        drink_bot.update_drinks('drink_four_state', "disabled")
         return 'OK'
     
     def drink_four_prime(request): 
         type_drink = 'four'
         print("priming drink 4")
-        device.dispense(type_drink, 4)
+        drinkbot.dispense(type_drink, 4)
         return 'OK'
     
     def drink_four(request):                                          
         type_drink = 'four'                                         
-        four_drink_amount = device.get_drink_amount(type_drink)
+        four_drink_amount = drink_bot.get_drink_amount(type_drink)
         print(f'Dispensing Drink 4 for {four_drink_amount} seconds')
-        device.dispense(type_drink, four_drink_amount)
+        drinkbot.dispense(type_drink, four_drink_amount)
         return 'OK'
 
  # Resetting DrinkBot settings
@@ -343,7 +347,7 @@ def application_mode():
     
 ####################################### Startup process #####################################
 
-device.reset()
+drinkbot.reset()
 
 try:
     os.stat(WIFI_FILE)
