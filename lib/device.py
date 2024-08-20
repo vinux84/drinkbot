@@ -15,7 +15,6 @@ def TurnOnLEDIntent():
     
 # suedo Alexa calls
 def PourDrinkOneIntent():
-    print(drink_bot.drinkbot_serving)
     if not drink_bot.drinkbot_serving:
         type_drink = 'one'                                         
         one_drink_amount = drink_bot.get_drink_amount(type_drink)
