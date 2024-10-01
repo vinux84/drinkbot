@@ -7,12 +7,16 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.min.js" integrity="sha384-cuYeSxntonz0PPNlHhBs68uyIAVpIIOZZ5JqeqvYYIcEL727kskC66kF92t6Xl2V" crossorigin="anonymous"></script>
 </head>
+<style>
+</style>
 <body style="background-color:#0f1012;">
 <br/>
 <div class="text-white text-center">
   <h1 class="display-1 fw-bold">DrinkBot</h1>
 </div>
-<br/>
+<div class="progress" style="height: 30px; background-color:#0f1012;">
+    <div class="progress-bar progress-bar-striped progress-bar-animated bg-secondary" role="progressbar" id="statusvalue" style="width: 0%"></div>
+</div>
 <br/>
 <div class="row">
     <h1 class="display-3 fw-normal text-begin text-white">Control Center:</h1>
@@ -92,25 +96,110 @@
 <div class="row">
     <div class="col">
         <div class="container mt-3 text-center">
-            <button type="button" class="btn btn-primary" id="editBtn">Edit Drinks</button>
+            <button type="button" class="btn btn-primary" id="editBtn">Settings</button>
         </div>
     </div>
 </div>
 </br>
-<div class="row g-1">
-    <div class="container mt-3 text-center">
-        <button type="button" class="btn btn-danger" id="resetBtn">Reset DrinkBot</button>
-    </div>
-</div>
 <script>
 if ( window.history.replaceState ) {
   window.history.replaceState( null, null, window.location.href );
 }
 </script>
-
-
-
-
+<script type="text/javascript">
+    
+    var drink_one_n = "{{drink_one_name}}";
+    var drink_two_n = "{{drink_two_name}}";
+    var drink_three_n = "{{drink_three_name}}";
+    var drink_four_n = "{{drink_four_name}}";
+   
+    var drink_one_a = "{{drink_one_amount}}";
+    var drink_two_a = "{{drink_two_amount}}";
+    var drink_three_a = "{{drink_three_amount}}";
+    var drink_four_a = "{{drink_four_amount}}";
+    
+    const drink_one = document.getElementById('drink_one');
+    const drink_two = document.getElementById('drink_two');
+    const drink_three = document.getElementById('drink_three');
+    const drink_four = document.getElementById('drink_four');
+    
+    drink_one.addEventListener("click", function (){progress_bar(drink_one_n, drink_one_a);});    
+    drink_two.addEventListener("click", function (){progress_bar(drink_two_n, drink_two_a);});
+    drink_three.addEventListener("click", function (){progress_bar(drink_three_n, drink_three_a);});
+    drink_four.addEventListener("click", function (){progress_bar(drink_four_n, drink_four_a);});
+    
+    function drink_check(drink_name, drink_amount) {
+        if (drink_name === 'one') {
+            var drink_n = drink_one_n;
+        } else if (drink_name === 'two') {
+            var drink_n = drink_two_n;
+        } else if (drink_name === 'three') {
+            var drink_n = drink_three_n;
+        } else if (drink_name === 'four') {
+            var drink_n = drink_four_n;
+        } progress_bar(drink_n, drink_amount);}
+        
+    function progress_bar(drink_name, drink_amount) {
+        disable_drinks();
+        disable_drinks();
+        var drink_amount_split = drink_amount.split(" ");
+        var drink_num = drink_amount_split[0];
+        var num_length = drink_num.length;
+        if (num_length === 3) {
+            var float_array = drink_num.split(".");
+            var first = float_array[0];
+            var second = float_array[1];
+            var together = first + second + "00";
+            var num = Number(together);
+        } else
+            if (num_length === 1) {
+                var together = drink_num + "000";
+                var check_num = Number(together);
+                if (check_num === 3000) {
+                    var num = check_num;
+                } else
+                    if (check_num === 4000) {
+                        var num = check_num + 250;
+                    } else
+                        if (check_num === 5000) {
+                            var num = check_num + 500;
+                        }
+        }  
+  
+        var total_seconds = num + 18000;
+        var value = 0;
+        let id = setInterval(function(){
+            value++;
+            document.getElementById('statusvalue').innerHTML = value + "% - " + " Pouring " + drink_name;
+            document.getElementById('statusvalue').style.width = value + "%";
+            if (value >= 100){
+                clearInterval(id);
+                document.getElementById('statusvalue').style.width = "100%";
+                document.getElementById('statusvalue').innerHTML = "100% - " + drink_name + " Served, Enjoy!";
+                setTimeout(stop_bar, 5000);
+                
+            }
+        }, total_seconds / 100); 
+    }
+    
+    function stop_bar() {
+        document.getElementById('statusvalue').style.width = "0%";
+    }
+    
+    function disable_drinks() {
+        document.getElementById("drink_one").disabled = true;
+        document.getElementById("drink_two").disabled = true;
+        document.getElementById("drink_three").disabled = true;
+        document.getElementById("drink_four").disabled = true; 
+    }
+    
+    function enable_drinks() {
+        document.getElementById("drink_one").disabled = false;
+        document.getElementById("drink_two").disabled = false;
+        document.getElementById("drink_three").disabled = false;
+        document.getElementById("drink_four").disabled = false; 
+    }
+</script>
 
 <script src="data:text/javascript,document.getElementById('drink_one').onclick = async function() { await fetch('/drink_one'); };" defer></script>
 <script src="data:text/javascript,document.getElementById('drink_two').onclick = async function() { await fetch('/drink_two'); };" defer></script>
@@ -118,8 +207,11 @@ if ( window.history.replaceState ) {
 <script src="data:text/javascript,document.getElementById('drink_four').onclick = async function() { await fetch('/drink_four'); };" defer></script>
 <script src="data:text/javascript,document.getElementById('editBtn').onclick = function() { window.location.href = '/edit'; };" defer></script>
 <script src="data:text/javascript,document.getElementById('savedrinks').onclick = function() { window.location.href = '/'; };" defer></script>
-<script src="data:text/javascript,document.getElementById('resetBtn').onclick = function() { window.location.href = '/reset'; };" defer></script>
+<script src="data:text/javascript,async function getStatus() {const t = await fetch('/status'); const tVal = await t.text(); var tVal_l = tVal.length; if (tVal === 'nocup') {disable_drinks()} else if (tVal_l === 6) {enable_drinks()} else if (tVal_l > 6) {var split_tVal = tVal.split(' '); drink_check(split_tVal[0], split_tVal[1])} setTimeout(getStatus, 1000)}; getStatus();" defer></script>
 
-            
+
+
 </body>
 </html>
+
+

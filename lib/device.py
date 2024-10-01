@@ -19,7 +19,8 @@ def PourDrinkOneIntent():
         type_drink = 'one'                                         
         one_drink_amount = drink_bot.get_drink_amount(type_drink)
         print(f'Alexa Dispensing Drink 1 for {one_drink_amount} seconds')
-        drinkbot_alexa.dispense(type_drink, one_drink_amount) 
+        drink_bot.banner_status += 1
+        drinkbot_alexa.dispense(type_drink, one_drink_amount)
     else:
         print("DrinkBot busy") # Alexa grabs response here?
         
@@ -50,3 +51,6 @@ def PourDrinkFourIntent():
     else:
         print("DrinkBot busy") # Alexa grabs response here?
 
+    
+    
+    

@@ -21,11 +21,12 @@ WIFI_MAX_ATTEMPTS = 3
 
 drinkbot = DrinkBot()
 
-account_sid = 'Twilio Account SID'
-auth_token = 'Twilio Auth Token'
-sender_num = 'Twilio Sender Number'
+account_sid = 'account_ssid'
+auth_token = 'auth_token'
+sender_num = 'sender_num'
 
 running_thread = False
+
 
 drink_one_button = machine.Pin(0, machine.Pin.IN, machine.Pin.PULL_DOWN) 
 drink_two_button = machine.Pin(2, machine.Pin.IN, machine.Pin.PULL_DOWN)
@@ -211,7 +212,29 @@ def application_mode():
                                drink_two_t=drink_two_toggle, drink_two_state=drinktwos, drink_two_name=drinktwon, drink_two_amount=drinktwoa,
                                drink_three_t=drink_three_toggle, drink_three_state=drinkthrees, drink_three_name=drinkthreen, drink_three_amount=drinkthreea,
                                drink_four_t=drink_four_toggle, drink_four_state=drinkfours, drink_four_name=drinkfourn, drink_four_amount=drinkfoura)
-    
+
+    def dispense_status(request):
+        if drinkbot.ir_sensor.value() == 1:
+            drink_bot.cup = False
+            no_cup = "nocup"
+            return f"{no_cup}"
+        else:
+            drink_bot.cup = True
+            yes_cup = "yescup"
+            if drink_bot.banner_status == 0:
+                if not drink_bot.current_drink == None:
+                    drink_bot.banner_status += 1
+                    drink_n = drink_bot.current_drink
+                    drink_a = drink_bot.current_amount
+                    current_drink_info = f"{drink_n} {drink_a}"
+                    print(current_drink_info)
+                    return f'{current_drink_info}'
+            elif drink_bot.banner_status == 1:
+                if drink_bot.drinkbot_serving == False:
+                    drink_bot.banner_status = 0
+                no_cup = "nocup"
+                return f"{no_cup}"
+            return f'{yes_cup}'
     
     def drink_one_on(request):                                 
         drink_bot.update_drinks('drink_one_state', "on")
@@ -341,6 +364,7 @@ def application_mode():
     server.add_route("/drink_four_prime", handler = drink_four_prime, methods = ["GET"])
     server.add_route("/drink_four", handler = drink_four, methods = ["GET"])
     
+    server.add_route("/status", handler = dispense_status, methods = ["GET"])
     server.add_route("/edit", handler = edit_drinks, methods = ["GET"])
     server.add_route("/reset", handler = app_reset, methods = ["GET"])
     server.set_callback(app_catch_all)

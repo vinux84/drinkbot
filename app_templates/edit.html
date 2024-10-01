@@ -147,7 +147,12 @@
         </div>
         <div class="col">
             <div class="container mt-3 text-center">
-                <button type="{{save_drink_status}}" class="btn btn-success" id={{save_drink_status}}>Save Drinks</button>
+                <button type="{{save_drink_status}}" class="btn btn-success" id={{save_drink_status}}>Save</button>
+            </div>
+        </div>
+        <div class="col">
+            <div class="container mt-3 text-center">
+                <button type="button" class="btn btn-danger" id="resetBtn">Reset</button>
             </div>
         </div>
     </div>
@@ -210,5 +215,6 @@
 <script src="data:text/javascript,document.getElementById('drink_two_prime').onclick = async function() { await fetch('/drink_two_prime'); };" defer></script>
 <script src="data:text/javascript,document.getElementById('drink_three_prime').onclick = async function() { await fetch('/drink_three_prime'); };" defer></script>
 <script src="data:text/javascript,document.getElementById('drink_four_prime').onclick = async function() { await fetch('/drink_four_prime'); };" defer></script>
+<script src="data:text/javascript,document.getElementById('resetBtn').onclick = function() { window.location.href = '/reset'; };" defer></script>
 </body>
 </html>

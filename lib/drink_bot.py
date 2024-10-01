@@ -3,7 +3,13 @@ import utime
 import json
 
 DRINKS = "drinks.json"
+
 drinkbot_serving = False
+cup = False
+banner_status = 0
+current_drink = None
+current_amount = None
+
 
 class DrinkBot:
     def __init__(self):
@@ -86,8 +92,14 @@ class DrinkBot:
         self.drink = drink
         self.drink_amount = drink_amount
         global drinkbot_serving
+        global current_drink
+        global current_amount
+        global cup
+        current_drink = drink
+        current_amount = drink_amount
         if not drinkbot_serving:
             if self.ir_sensor.value() == 0:
+                cup = True
                 if self.limit_switch_top.value() == 0:
                     drinkbot_serving = True
                     utime.sleep(1) 
@@ -111,6 +123,11 @@ class DrinkBot:
                                     self._cup_stop()
                                     u -= 1
                                     drinkbot_serving = False
+                                    current_drink = None
+                                    current_amount = None
+                            utime.sleep(5)
+                            if self.ir_sensor.value() == 1:
+                                cup = False   
             else:
                 print("Please place cup on holder first...")
         else:
