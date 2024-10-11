@@ -18,15 +18,12 @@ WIFI_FILE = "wifi.json"
 IP_ADDRESS = "ip.json"
 DRINKS = "drinks.json"
 WIFI_MAX_ATTEMPTS = 3
-
-drinkbot = DrinkBot()
-
 account_sid = 'account_ssid'
 auth_token = 'auth_token'
 sender_num = 'sender_num'
 
+drinkbot = DrinkBot()
 running_thread = False
-
 
 drink_one_button = machine.Pin(0, machine.Pin.IN, machine.Pin.PULL_DOWN) 
 drink_two_button = machine.Pin(2, machine.Pin.IN, machine.Pin.PULL_DOWN)
@@ -54,6 +51,7 @@ def polling():
     button_presses = 0
     debounce = 0
     while running_thread:
+        gc.collect()
         utime.sleep(.10)
         if ((drink_one_button.value() is 1) and (utime.ticks_ms()-debounce) > 500):
             button_presses+=1
@@ -135,13 +133,6 @@ def application_mode():
       
     def app_index(request):
         gc.collect()
-        save_alert = None
-        
-        if request.form:                              
-            for key, value in request.form.items():
-                if value != "":
-                    drink_bot.update_drinks(key, value)
-            save_alert = 'on'
         
         with open(DRINKS) as f:                       
             drink_db = json.load(f)
@@ -158,18 +149,17 @@ def application_mode():
             drinkfourn = drink_db['drink_four_name']
             drinkfoura = drink_db['drink_four_amount']
                 
-        return render_template(f"{APP_TEMPLATE_PATH}/index.html", sa=save_alert,
+        return render_template(f"{APP_TEMPLATE_PATH}/index.html",
                                drink_one_state=drinkones, drink_one_name=drinkonen, drink_one_amount=drinkonea,
                                drink_two_state=drinktwos, drink_two_name=drinktwon, drink_two_amount=drinktwoa,
                                drink_three_state=drinkthrees, drink_three_name=drinkthreen, drink_three_amount=drinkthreea,
                                drink_four_state=drinkfours, drink_four_name=drinkfourn, drink_four_amount=drinkfoura)
     
-    def edit_drinks(request):                             
-        drink_one_toggle = None
-        drink_two_toggle = None
-        drink_three_toggle = None
-        drink_four_toggle = None
-        count_toggle = 0
+    def edit_drinks(request):
+        gc.collect()
+         
+        for key, value in request.form.items():    
+            drink_bot.update_drinks(key, value)
         
         with open(DRINKS) as f:
             drink_db = json.load(f)
@@ -177,43 +167,40 @@ def application_mode():
             if drinkones == 'on':
                 drink_one_toggle = 'checked'
             else:
-                count_toggle += 1
+                drink_one_toggle = ''
             drinkonen = drink_db['drink_one_name']
             drinkonea = drink_db['drink_one_amount']
             drinktwos = drink_db['drink_two_state']
             if drinktwos == 'on':
                 drink_two_toggle = 'checked'
             else:
-                count_toggle += 1
+                drink_two_toggle = ''
             drinktwon = drink_db['drink_two_name']
             drinktwoa = drink_db['drink_two_amount']
             drinkthrees = drink_db['drink_three_state']
             if drinkthrees == 'on':
                 drink_three_toggle = 'checked'
             else:
-                count_toggle += 1
+                drink_three_toggle = ''
             drinkthreen = drink_db['drink_three_name']
             drinkthreea = drink_db['drink_three_amount']
             drinkfours = drink_db['drink_four_state']
             if drinkfours == 'on':
                 drink_four_toggle = 'checked'
             else:
-                count_toggle += 1
+                drink_four_toggle = ''
             drinkfourn = drink_db['drink_four_name']
             drinkfoura = drink_db['drink_four_amount']
-            
-            if count_toggle == 4:
-               save_drink_s = 'button'
-            else:
-                save_drink_s = 'submit'
                 
-        return render_template(f"{APP_TEMPLATE_PATH}/edit.html", save_drink_status=save_drink_s,
+        return render_template(f"{APP_TEMPLATE_PATH}/edit.html",
                                drink_one_t=drink_one_toggle, drink_one_state=drinkones, drink_one_name=drinkonen, drink_one_amount=drinkonea,
                                drink_two_t=drink_two_toggle, drink_two_state=drinktwos, drink_two_name=drinktwon, drink_two_amount=drinktwoa,
                                drink_three_t=drink_three_toggle, drink_three_state=drinkthrees, drink_three_name=drinkthreen, drink_three_amount=drinkthreea,
                                drink_four_t=drink_four_toggle, drink_four_state=drinkfours, drink_four_name=drinkfourn, drink_four_amount=drinkfoura)
 
+
     def dispense_status(request):
+        gc.collect()
         if drinkbot.ir_sensor.value() == 1:
             drink_bot.cup = False
             no_cup = "nocup"
@@ -236,14 +223,6 @@ def application_mode():
                 return f"{no_cup}"
             return f'{yes_cup}'
     
-    def drink_one_on(request):                                 
-        drink_bot.update_drinks('drink_one_state', "on")
-        return 'OK'
-    
-    def drink_one_off(request):                                 
-        drink_bot.update_drinks('drink_one_state', "disabled")
-        return 'OK'
-    
     def drink_one_prime(request):   
         type_drink = 'one'       
         print("priming drink 1")
@@ -255,14 +234,6 @@ def application_mode():
         one_drink_amount = drink_bot.get_drink_amount(type_drink)
         print(f'Dispensing Drink 1 for {one_drink_amount} seconds')
         drinkbot.dispense(type_drink, one_drink_amount)
-        return 'OK'
-    
-    def drink_two_on(request):                                 
-        drink_bot.update_drinks('drink_two_state', "on")
-        return 'OK'
-    
-    def drink_two_off(request):                                 
-        drink_bot.update_drinks('drink_two_state', "disabled")
         return 'OK'
     
     def drink_two_prime(request): 
@@ -278,14 +249,6 @@ def application_mode():
         drinkbot.dispense(type_drink, two_drink_amount)  
         return 'OK'
     
-    def drink_three_on(request):                                 
-        drink_bot.update_drinks('drink_three_state', "on")
-        return 'OK'
-    
-    def drink_three_off(request):                                 
-        drink_bot.update_drinks('drink_three_state', "disabled")
-        return 'OK'
-    
     def drink_three_prime(request): 
         type_drink = 'three'  
         print("priming drink 3")
@@ -297,14 +260,6 @@ def application_mode():
         three_drink_amount = drink_bot.get_drink_amount(type_drink)
         print(f'Dispensing Drink 3 for {three_drink_amount} seconds')
         drinkbot.dispense(type_drink, three_drink_amount) 
-        return 'OK'
-    
-    def drink_four_on(request):                                 
-        drink_bot.update_drinks('drink_four_state', "on")
-        return 'OK'
-    
-    def drink_four_off(request):                                 
-        drink_bot.update_drinks('drink_four_state', "disabled")
         return 'OK'
     
     def drink_four_prime(request): 
@@ -325,10 +280,10 @@ def application_mode():
         os.remove(WIFI_FILE)
         os.remove(IP_ADDRESS)
         os.remove(DRINKS)
-        drink_data = {"drink_one_state": "disabled", "drink_one_name": "Drink 1", "drink_one_amount": "1.5 oz. (Single)",
-                      "drink_two_state": "disabled", "drink_two_name": "Drink 2", "drink_two_amount": "1.5 oz. (Single)",
-                      "drink_three_state": "disabled", "drink_three_name": "Drink 3", "drink_three_amount": "1.5 oz. (Single)",
-                      "drink_four_state": "disabled", "drink_four_name": "Drink 4", "drink_four_amount": "1.5 oz. (Single)"}
+        drink_data = {"drink_one_state": "off", "drink_one_name": "Drink name", "drink_one_amount": "1.5 oz. (Single)",
+                      "drink_two_state": "off", "drink_two_name": "Drink name", "drink_two_amount": "1.5 oz. (Single)",
+                      "drink_three_state": "off", "drink_three_name": "Drink name", "drink_three_amount": "1.5 oz. (Single)",
+                      "drink_four_state": "off", "drink_four_name": "Drink name", "drink_four_amount": "1.5 oz. (Single)"}
         with open(DRINKS, "w") as f:
             json.dump(drink_data, f) 
 
@@ -341,31 +296,18 @@ def application_mode():
     def app_catch_all(request):
         return "Not found.", 404
 
-    server.add_route("/", handler = app_index, methods = ["GET"])       
-    server.add_route("/", handler = app_index, methods = ["POST"])
-    
-    server.add_route("/drink_one_on", handler = drink_one_on, methods = ["GET"])
-    server.add_route("/drink_one_off", handler = drink_one_off, methods = ["GET"])
+    server.add_route("/", handler = app_index, methods = ["GET"])
     server.add_route("/drink_one_prime", handler = drink_one_prime, methods = ["GET"])
     server.add_route("/drink_one", handler = drink_one, methods = ["GET"])
-    
-    server.add_route("/drink_two_on", handler = drink_two_on, methods = ["GET"])
-    server.add_route("/drink_two_off", handler = drink_two_off, methods = ["GET"])
     server.add_route("/drink_two_prime", handler = drink_two_prime, methods = ["GET"])
     server.add_route("/drink_two", handler = drink_two, methods = ["GET"])
-    
-    server.add_route("/drink_three_on", handler = drink_three_on, methods = ["GET"])
-    server.add_route("/drink_three_off", handler = drink_three_off, methods = ["GET"])
     server.add_route("/drink_three_prime", handler = drink_three_prime, methods = ["GET"])
     server.add_route("/drink_three", handler = drink_three, methods = ["GET"])
-    
-    server.add_route("/drink_four_on", handler = drink_four_on, methods = ["GET"])
-    server.add_route("/drink_four_off", handler = drink_four_off, methods = ["GET"])
     server.add_route("/drink_four_prime", handler = drink_four_prime, methods = ["GET"])
     server.add_route("/drink_four", handler = drink_four, methods = ["GET"])
-    
     server.add_route("/status", handler = dispense_status, methods = ["GET"])
     server.add_route("/edit", handler = edit_drinks, methods = ["GET"])
+    server.add_route("/edit", handler = edit_drinks, methods = ["POST"])
     server.add_route("/reset", handler = app_reset, methods = ["GET"])
     server.set_callback(app_catch_all)
     

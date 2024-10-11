@@ -18,22 +18,22 @@
     <h1 class="display-3 fw-normal text-begin text-white">Edit Center:</h1>
 </div>
 <br/>
-<form action="/" method="POST">
+<form id="drinkForm">
 <div class="row">
     <div class="col-8">
         <p class="display-6 text-begin text-white">Drink One Activate:</p>
     </div>
     <div class="col-4 d-flex justify-content-center form-check fs-1 form-switch text-white">
-        <input class="form-check-input" type="checkbox" role="switch" onclick="OneisChecked()" id="toggle_drink_one" {{drink_one_t}}>
+        <input class="form-check-input" type="checkbox" role="switch" onclick="OneisChecked()" name="drink_one_state" id="drink_one_state" value="{{drink_one_state}}" {{drink_one_t}}>
         <label class="form-check-label display-6" for="toggle_drink_one"></label>
     </div>
 </div>    
     <div class="row">
         <div class="col-4">
-            <input type="text" class="form-control" id="drink_one_name" name="drink_one_name" placeholder="{{drink_one_name}}" {{drink_one_state}}>
+            <input type="text" class="form-control" onchange="inputChange()"  id="drink_one_name" name="drink_one_name" placeholder="{{drink_one_name}}">
         </div>
         <div class="col-4">
-            <select class="form-select" style="width:auto;" id="drink_one_amount" name="drink_one_amount" aria-label="drink_one_amount" {{drink_one_state}}>
+            <select class="form-select" style="width:auto;" onchange="inputChange()" id="drink_one_amount" name="drink_one_amount" aria-label="drink_one_amount">
                 <option selected>{{drink_one_amount}}</option>
                 <option value="1.5 oz. (Single)">1.5 oz. (Single)</option>
                 <option value="3 oz. (Double)">3 oz. (Double)</option>
@@ -43,7 +43,7 @@
         </div>
         <div class="col-4">
             <div class="container text-center">
-                <button type="button" class="btn btn-warning" id="drink_one_prime" {{drink_one_state}}>Prime</button>
+                <button type="button" class="btn btn-warning" id="drink_one_prime">Prime</button>
             </div>
         </div>  
     </div>
@@ -55,16 +55,16 @@
         <p class="display-6 text-begin text-white">Drink Two Activate:</p>
     </div>
     <div class="col-4 d-flex justify-content-center form-check fs-1 form-switch text-white">
-        <input class="form-check-input" type="checkbox" role="switch" onclick="TwoisChecked()" id="toggle_drink_two" {{drink_two_t}}>
+        <input class="form-check-input" type="checkbox" role="switch" onclick="TwoisChecked()" name="drink_two_state" id="drink_two_state" value="{{drink_two_state}}" {{drink_two_t}}>
         <label class="form-check-label display-6" for="toggle_drink_two"></label>
     </div>
 </div>    
     <div class="row">
         <div class="col-4">
-            <input type="text" class="form-control" id="drink_two_name" name="drink_two_name" placeholder="{{drink_two_name}}" {{drink_two_state}}>
+            <input type="text" class="form-control" onchange="inputChange()" id="drink_two_name" name="drink_two_name" placeholder="{{drink_two_name}}">
         </div>
         <div class="col-4">
-            <select class="form-select" style="width:auto;" id="drink_two_amount" name="drink_two_amount" aria-label="drink_two_amount" {{drink_two_state}}>
+            <select class="form-select" style="width:auto;" onchange="inputChange()" id="drink_two_amount" name="drink_two_amount" aria-label="drink_two_amount">
                 <option selected>{{drink_two_amount}}</option>
                 <option value="1.5 oz. (Single)">1.5 oz. (Single)</option>
                 <option value="3 oz. (Double)">3 oz. (Double)</option>
@@ -74,7 +74,7 @@
         </div>
         <div class="col-4">
             <div class="container text-center">
-                <button type="button" class="btn btn-warning" id="drink_two_prime" {{drink_two_state}}>Prime</button>
+                <button type="button" class="btn btn-warning" id="drink_two_prime">Prime</button>
             </div>
         </div>  
     </div>
@@ -85,16 +85,16 @@
         <p class="display-6 text-begin text-white">Drink Three Activate:</p>
     </div>
     <div class="col-4 d-flex justify-content-center form-check fs-1 form-switch text-white">
-        <input class="form-check-input" type="checkbox" role="switch" onclick="ThreeisChecked()" id="toggle_drink_three" {{drink_three_t}}>
+        <input class="form-check-input" type="checkbox" role="switch" onclick="ThreeisChecked()" name="drink_three_state" id="drink_three_state" value="{{drink_three_state}}" {{drink_three_t}}>
         <label class="form-check-label display-6" for="toggle_drink_three"></label>
     </div>
 </div>    
     <div class="row">
         <div class="col-4">
-            <input type="text" class="form-control" id="drink_three_name" name="drink_three_name" placeholder="{{drink_three_name}}" {{drink_three_state}}>
+            <input type="text" class="form-control" onchange="inputChange()" id="drink_three_name" name="drink_three_name" placeholder="{{drink_three_name}}">
         </div>
         <div class="col-4">
-            <select class="form-select" style="width:auto;" id="drink_three_amount" name="drink_three_amount" aria-label="drink_three_amount" {{drink_three_state}}>
+            <select class="form-select" style="width:auto;" onchange="inputChange()" id="drink_three_amount" name="drink_three_amount" aria-label="drink_three_amount">
                 <option selected>{{drink_three_amount}}</option>
                 <option value="1.5 oz. (Single)">1.5 oz. (Single)</option>
                 <option value="3 oz. (Double)">3 oz. (Double)</option>
@@ -104,27 +104,27 @@
         </div>
         <div class="col-4">
             <div class="container text-center">
-                <button type="button" class="btn btn-warning" id="drink_three_prime" {{drink_three_state}}>Prime</button>
+                <button type="button" class="btn btn-warning" id="drink_three_prime">Prime</button>
             </div>
         </div>  
     </div>
     <br/>
     <br/>
-<div class="row">
+<div class="row"> 
     <div class="col-8">
         <p class="display-6 text-begin text-white">Drink Four Activate:</p>
     </div>
     <div class="col-4 d-flex justify-content-center form-check fs-1 form-switch text-white">
-        <input class="form-check-input" type="checkbox" role="switch" onclick="FourisChecked()" id="toggle_drink_four" {{drink_four_t}}>
+        <input class="form-check-input" type="checkbox" role="switch" onclick="FourisChecked()" name="drink_four_state" id="drink_four_state" value="{{drink_four_state}}" {{drink_four_t}}>
         <label class="form-check-label display-6" for="toggle_drink_four"></label>
     </div>
 </div>    
     <div class="row">
         <div class="col-4">
-            <input type="text" class="form-control" id="drink_four_name" name="drink_four_name" placeholder="{{drink_four_name}}" {{drink_four_state}}>
+            <input type="text" class="form-control" onchange="inputChange()" id="drink_four_name" name="drink_four_name" placeholder="{{drink_three_name}}">
         </div>
         <div class="col-4">
-            <select class="form-select" style="width:auto;" id="drink_four_amount" name="drink_four_amount" aria-label="drink_four_amount" {{drink_four_state}}>
+            <select class="form-select" style="width:auto;" onchange="inputChange()" id="drink_four_amount" name="drink_four_amount" aria-label="drink_four_amount">
                 <option selected>{{drink_four_amount}}</option>
                 <option value="1.5 oz. (Single)">1.5 oz. (Single)</option>
                 <option value="3 oz. (Double)">3 oz. (Double)</option>
@@ -134,20 +134,20 @@
         </div>
         <div class="col-4">
             <div class="container text-center">
-                <button type="button" class="btn btn-warning" id="drink_four_prime" {{drink_four_state}}>Prime</button>
+                <button type="button" class="btn btn-warning" id="drink_four_prime">Prime</button>
             </div>
         </div>  
     </div>
     <br/>
     <div class="row">
          <div class="col">
-            <div class="container mt-3 text-center">
+            <div class="container mt-3 pr-5 text-center">
                 <button type="button" class="btn btn-primary" id="home">Home</button>
             </div>
         </div>
         <div class="col">
             <div class="container mt-3 text-center">
-                <button type="{{save_drink_status}}" class="btn btn-success" id={{save_drink_status}}>Save</button>
+                <button type=button" class="btn btn-success" id="save" onclick="submitForm()">Save</button>
             </div>
         </div>
         <div class="col">
@@ -157,59 +157,186 @@
         </div>
     </div>
 </form>
-
 <script>
-   async function OneisChecked() {
-      var c = document.getElementById('toggle_drink_one');
-      if (c.checked) {
-        await fetch('/drink_one_on');
-        window.location.href = '/edit';
-      } else {
-        await fetch('/drink_one_off');
-        window.location.href = '/edit';
-      }
+    var drinkOnestate = document.getElementById("drink_one_state");
+    var drinkOnename = document.getElementById("drink_one_name");
+    var drinkOneamount = document.getElementById("drink_one_amount");
+    var drinkOneprime = document.getElementById("drink_one_prime");
+    var drinkTwostate = document.getElementById("drink_two_state");
+    var drinkTwoname = document.getElementById("drink_two_name");
+    var drinkTwoamount = document.getElementById("drink_two_amount");
+    var drinkTwoprime = document.getElementById("drink_two_prime");
+    var drinkThreestate = document.getElementById("drink_three_state");
+    var drinkThreename = document.getElementById("drink_three_name");
+    var drinkThreeamount = document.getElementById("drink_three_amount");
+    var drinkThreeprime = document.getElementById("drink_three_prime");
+    var drinkFourstate = document.getElementById("drink_four_state");
+    var drinkFourname = document.getElementById("drink_four_name");
+    var drinkFouramount = document.getElementById("drink_four_amount");
+    var drinkFourprime = document.getElementById("drink_four_prime");
+    var drink_one_s = "{{drink_one_state}}";
+    var drink_one_n = "{{drink_one_name}}";
+    var drink_one_a = "{{drink_one_amount}}";
+    var drink_two_s = "{{drink_two_state}}";
+    var drink_two_n = "{{drink_two_name}}";
+    var drink_two_a = "{{drink_two_amount}}";
+    var drink_three_s = "{{drink_three_state}}";
+    var drink_three_n = "{{drink_three_name}}";
+    var drink_three_a = "{{drink_three_amount}}";
+    var drink_four_s = "{{drink_four_state}}";
+    var drink_four_n = "{{drink_four_name}}";
+    var drink_four_a = "{{drink_four_amount}}";
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById("save").disabled = true;
+        if (drink_one_s === "on") {
+            drinkOnestate.checked = true;
+            drinkOnename.disabled = false;
+            drinkOneamount.disabled = false;
+            drinkOneprime.disabled = false;
+        } else {
+            drinkOnestate.checked = false;
+            drinkOnename.disabled = true;
+            drinkOneamount.disabled = true;
+            drinkOneprime.disabled = true;
+        }
+        if (drink_two_s === "on") {
+            drinkTwostate.checked = true;
+            drinkTwoname.disabled = false;
+            drinkTwoamount.disabled = false;
+            drinkTwoprime.disabled = false;
+        } else {
+            drinkTwostate.checked = false;
+            drinkTwoname.disabled = true;
+            drinkTwoamount.disabled = true;
+            drinkTwoprime.disabled = true;
+        }
+        if (drink_three_s === "on") {
+            drinkThreestate.checked = true;
+            drinkThreename.disabled = false;
+            drinkThreeamount.disabled = false;
+            drinkThreeprime.disabled = false;
+        } else {
+            drinkThreestate.checked = false;
+            drinkThreename.disabled = true;
+            drinkThreeamount.disabled = true;
+            drinkThreeprime.disabled = true;
+        }
+        if (drink_four_s === "on") {
+            drinkFourstate.checked = true;
+            drinkFourname.disabled = false;
+            drinkFouramount.disabled = false;
+            drinkFourprime.disabled = false;
+        } else {
+            drinkFourstate.checked = false;
+            drinkFourname.disabled = true;
+            drinkFouramount.disabled = true;
+            drinkFourprime.disabled = true;
+        }
+            
+    });
+</script>
+<script>
+    async function OneisChecked() {
+        document.getElementById("save").disabled = false;
+        if (drinkOnestate.checked) {
+            drinkOnename.disabled = false;
+            drinkOneamount.disabled = false;
+            drinkOneprime.disabled = false;
+            drinkOnestate.value = "on";
+        } else {
+            drinkOnename.disabled = true;
+            drinkOneamount.disabled = true;
+            drinkOneprime.disabled = true;
+            drinkOnestate.value = "off";
+        }
    }
 </script>
-
 <script>
-   async function TwoisChecked() {
-      var c = document.getElementById('toggle_drink_two');
-      if (c.checked) {
-        await fetch('/drink_two_on');
-        window.location.href = '/edit';
-      } else {
-        await fetch('/drink_two_off');
-        window.location.href = '/edit';
-      }
-   }
+    async function TwoisChecked() {
+        document.getElementById("save").disabled = false;
+        if (drinkTwostate.checked) {
+            drinkTwoname.disabled = false;
+            drinkTwoamount.disabled = false;
+            drinkTwoprime.disabled = false;
+            drinkTwostate.value = "on";
+        } else {
+            drinkTwoname.disabled = true;
+            drinkTwoamount.disabled = true;
+            drinkTwoprime.disabled = true;
+            drinkTwostate.value = "off";
+        }
+    }
+</script>
+<script>
+    async function ThreeisChecked() {
+        document.getElementById("save").disabled = false;
+        if (drinkThreestate.checked) {
+            drinkThreename.disabled = false;
+            drinkThreeamount.disabled = false;
+            drinkThreeprime.disabled = false;
+            drinkThreestate.value = "on";
+        } else {
+            drinkThreename.disabled = true;
+            drinkThreeamount.disabled = true;
+            drinkThreeprime.disabled = true;
+            drinkThreestate.value = "off";
+        }
+    }
+</script>
+<script>
+    async function FourisChecked() {
+        document.getElementById("save").disabled = false;
+        if (drinkFourstate.checked) {
+            drinkFourname.disabled = false;
+            drinkFouramount.disabled = false;
+            drinkFourprime.disabled = false;
+            drinkFourstate.value = "on";
+        } else {
+            drinkFourname.disabled = true;
+            drinkFouramount.disabled = true;
+            drinkFourprime.disabled = true;
+            drinkFourstate.value = "off";
+        }
+    }
+</script>
+<script>
+    function inputChange() {
+        document.getElementById("save").disabled = false;  
+    }
+</script>
+<script>
+    function submitForm() {
+        event.preventDefault();
+        var old_values = {drink_one_state: drink_one_s, drink_one_name: drink_one_n, drink_one_amount: drink_one_a, drink_two_state: drink_two_s, drink_two_name: drink_two_n, drink_two_amount: drink_two_a, drink_three_state: drink_three_s, drink_three_name: drink_three_n, drink_three_amount: drink_three_a, drink_four_state: drink_four_s, drink_four_name: drink_four_n, drink_four_amount: drink_four_a}
+        var new_values = {drink_one_state: drinkOnestate.value, drink_one_name: drinkOnename.value,  drink_one_amount: drinkOneamount.value, drink_two_state: drinkTwostate.value, drink_two_name: drinkTwoname.value, drink_two_amount: drinkTwoamount.value, drink_three_state: drinkThreestate.value, drink_three_name: drinkThreename.value, drink_three_amount: drinkThreeamount.value, drink_four_state: drinkFourstate.value, drink_four_name: drinkFourname.value, drink_four_amount: drinkFouramount.value}
+        send_data = {}
+        var empty_string = '';
+        for (var key in old_values) {
+            if (new_values.hasOwnProperty(key)) {
+                if (old_values[key] != new_values[key]) {
+                    if (new_values[key] !== empty_string) {
+                        send_data[key] = new_values[key];
+                    }
+                }               
+            }
+        }
+        const formData = new FormData();
+        for (const keys in send_data) {
+            formData.append(keys, send_data[keys]);
+        }
+        fetch('/edit', {
+            method: 'POST',
+            body: formData
+        })
+        
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+        document.getElementById("save").disabled = true;
+        sleep(1200).then(() => {window.location.href = "/edit";});
+    }    
 </script>
 
-<script>
-   async function ThreeisChecked() {
-      var c = document.getElementById('toggle_drink_three');
-      if (c.checked) {
-        await fetch('/drink_three_on');
-        window.location.href = '/edit';
-      } else {
-        await fetch('/drink_three_off');
-        window.location.href = '/edit';
-      }
-   }
-</script>
-
-<script>
-   async function FourisChecked() {
-      var c = document.getElementById('toggle_drink_four');
-      if (c.checked) {
-        await fetch('/drink_four_on');
-        window.location.href = '/edit';
-      } else {
-        await fetch('/drink_four_off');
-        window.location.href = '/edit';
-      }
-   }
-</script>
-<script src="data:text/javascript,document.getElementById('button').onclick = function() { window.location.href = '/'; };" defer></script>
 <script src="data:text/javascript,document.getElementById('home').onclick = function() { window.location.href = '/'; };" defer></script>
 <script src="data:text/javascript,document.getElementById('drink_one_prime').onclick = async function() { await fetch('/drink_one_prime'); };" defer></script>
 <script src="data:text/javascript,document.getElementById('drink_two_prime').onclick = async function() { await fetch('/drink_two_prime'); };" defer></script>
