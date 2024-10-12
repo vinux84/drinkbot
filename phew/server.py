@@ -1,4 +1,4 @@
-import uasyncio, os, time, device, machine, ssl, ubinascii
+import uasyncio, os, time, device, machine, ssl, ubinascii, json
 from phew import is_connected_to_wifi
 from lib import keys, simple
 from . import logging
@@ -358,10 +358,12 @@ def read_pem(file):
 
 def mqtt_callback(topic, msg):
     topic_str = topic.decode()
-    msg_str = msg.decode().strip('"')
-    print(f"RX: {topic_str}\t{msg_str}")
-    if hasattr(device, msg_str):
-        getattr(device, msg_str)()
+    msg_dict = json.loads(msg.decode())
+    print(f"RX: {topic_str}\t{msg_dict}")
+    intent = msg_dict.get("intent")
+    slots = msg_dict.get("slots")
+    if hasattr(device, intent):
+        getattr(device, intent)(**slots)
 
 def mqtt_setup():
     mqtt_client = simple.MQTTClient(
