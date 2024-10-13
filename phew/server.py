@@ -1,7 +1,8 @@
 import uasyncio, os, time, device, machine, ssl, ubinascii, json
 from phew import is_connected_to_wifi
+from phew import logging
+
 from lib import keys, simple
-from . import logging
 
 _routes = []
 catchall_handler = None
@@ -57,7 +58,7 @@ class Request:
       self.query = _parse_query_string(self.query_string)
 
   def __str__(self):
-    return f"""\
+    return f"""
 request: {self.method} {self.path} {self.protocol}
 headers: {self.headers}
 form: {self.form}
@@ -74,7 +75,7 @@ class Response:
     self.headers[name] = value
 
   def __str__(self):
-    return f"""\
+    return f"""
 status: {self.status}
 headers: {self.headers}
 body: {self.body}"""
@@ -143,7 +144,7 @@ class Route:
     return self.handler(request, **parameters)
         
   def __str__(self):
-    return f"""\
+    return f"""
 path: {self.path}
 methods: {self.methods}
 """
@@ -358,12 +359,17 @@ def read_pem(file):
 
 def mqtt_callback(topic, msg):
     topic_str = topic.decode()
-    msg_dict = json.loads(msg.decode())
-    print(f"RX: {topic_str}\t{msg_dict}")
-    intent = msg_dict.get("intent")
-    slots = msg_dict.get("slots")
-    if hasattr(device, intent):
-        getattr(device, intent)(**slots)
+    msg_str = msg.decode()
+    try:
+      msg_dict = json.loads(msg_str)
+      print(f"RX: {topic_str}\t{msg_dict}")
+      intent = msg_dict.get("intent")
+      slots = msg_dict.get("slots")
+      if hasattr(device, intent):
+          getattr(device, intent)(**slots)
+    except Exception as e:
+      print(f"Cannot parse JSON: {msg_str}")
+      print(f"Error: {e}")
 
 def mqtt_setup():
     mqtt_client = simple.MQTTClient(

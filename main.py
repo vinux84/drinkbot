@@ -1,7 +1,3 @@
-from phew import access_point, connect_to_wifi, is_connected_to_wifi, dns, server
-from phew.template import render_template
-from lib.drink_bot import DrinkBot
-from lib import drink_bot
 import json
 import machine
 import os
@@ -9,6 +5,13 @@ import utime
 import _thread
 import gc
 import requests
+import ntptime
+
+from phew import access_point, connect_to_wifi, is_connected_to_wifi, dns, server
+from phew.template import render_template
+from lib import drink_bot
+import shared
+
 
 AP_NAME = "DrinkBot"
 AP_DOMAIN = "drinkbot.io"
@@ -22,7 +25,6 @@ account_sid = 'account_ssid'
 auth_token = 'auth_token'
 sender_num = 'sender_num'
 
-drinkbot = DrinkBot()
 running_thread = False
 
 drink_one_button = machine.Pin(0, machine.Pin.IN, machine.Pin.PULL_DOWN) 
@@ -35,16 +37,13 @@ def send_sms(recipient, sender, message, auth_token, account_sid):
     data = "To={}&From={}&Body={}".format(recipient,sender,message)
     url = "https://api.twilio.com/2010-04-01/Accounts/{}/Messages.json".format(account_sid)
     print("Trying to send SMS with Twilio")
-    response = requests.post(url,
-                             data=data,
-                             auth=(account_sid,auth_token),
-                             headers=headers)
+    response = requests.post(url, data=data, auth=(account_sid,auth_token), headers=headers)
     if response.status_code == 201:
         print("SMS sent!")
     else:
         print("Error sending SMS: {}".format(response.text))
     response.close()
-                                                              
+
 def polling():
     global running_thread
     running_thread = True
@@ -126,11 +125,13 @@ def setup_mode():
 
     ap = access_point(AP_NAME)
     ip = ap.ifconfig()[0]
+    print("ip:", ip)
     dns.run_catchall(ip)
 
-def application_mode():                                                     
+def application_mode():
+    ntptime.settime()
     print("Entering application mode.")
-      
+
     def app_index(request):
         gc.collect()
         
@@ -157,7 +158,7 @@ def application_mode():
     
     def edit_drinks(request):
         gc.collect()
-         
+
         for key, value in request.form.items():    
             drink_bot.update_drinks(key, value)
         
@@ -275,7 +276,7 @@ def application_mode():
         drinkbot.dispense(type_drink, four_drink_amount)
         return 'OK'
 
- # Resetting DrinkBot settings
+# Resetting DrinkBot settings
     def app_reset(request):                                            
         os.remove(WIFI_FILE)
         os.remove(IP_ADDRESS)
@@ -287,10 +288,11 @@ def application_mode():
         with open(DRINKS, "w") as f:
             json.dump(drink_data, f) 
 
-        global running_thread
-        running_thread = False   
-        utime.sleep(1)                                         
-        _thread.start_new_thread(machine_reset, ())                    
+        if drinkbot.has_hardware:
+            global running_thread
+            running_thread = False   
+            utime.sleep(1)
+            _thread.start_new_thread(machine_reset, ())
         return render_template(f"{APP_TEMPLATE_PATH}/reset.html", access_point_ssid = AP_NAME)
 
     def app_catch_all(request):
@@ -313,58 +315,66 @@ def application_mode():
     
 ####################################### Startup process #####################################
 
-drinkbot.reset()
+def main():
+    shared.drinkbot.reset()
 
-try:
-    os.stat(WIFI_FILE)
-    with open(WIFI_FILE) as f:
-        wifi_current_attempt = 1
-        wifi_info = json.load(f)
-        while (wifi_current_attempt < WIFI_MAX_ATTEMPTS):
-            ip_address = connect_to_wifi(wifi_info["ssid"], wifi_info["password"])
-            if is_connected_to_wifi():
-                print(f"Connected to wifi, IP address {ip_address}")
-                break
-            else:
-                wifi_current_attempt += 1
-    if is_connected_to_wifi():
-        try: 
-            os.stat(IP_ADDRESS)
-            print("Checking if IP address changed...")
-            with open(IP_ADDRESS) as f:                                          
-                ip_address_status = json.load(f)
-                if ip_address_status["ipa"] == ip_address:                       
-                    application_mode()
+    try:
+        os.stat(WIFI_FILE)
+        with open(WIFI_FILE) as f:
+            wifi_current_attempt = 1
+            wifi_info = json.load(f)
+            while (wifi_current_attempt < WIFI_MAX_ATTEMPTS):
+                ip_address = connect_to_wifi(wifi_info["ssid"], wifi_info["password"])
+                if is_connected_to_wifi():
+                    print(f"Connected to wifi, IP address {ip_address}")
+                    break
                 else:
-                    print("Updating IP address in json file and sending message")                      
-                    json_ip_Data = {"ipa": ip_address}
-                    with open(IP_ADDRESS, "w") as f:
-                        json.dump(json_ip_Data, f)
-                    with open(WIFI_FILE) as f:
-                        wifi_info = json.load(f)
-                        recipient_num = '+1' + wifi_info["phone_number"]
-                    message = f"Hello! DrinkBot here again... \nclick http://{ip_address} to access me from now on."    
-                    send_sms(recipient_num, sender_num, message, auth_token, account_sid)
-                    application_mode()
-        except Exception: 
-            print("Drinkbot online, sending text message")                        
-            json_ip_Data = {"ipa": ip_address}      
-            with open(IP_ADDRESS, "w") as f:
-                json.dump(json_ip_Data, f)
-            with open(WIFI_FILE) as f:
-                wifi_info = json.load(f)
-                recipient_num = '+1' + wifi_info["phone_number"]
-            message = f"Hello! DrinkBot here... \nClick http://{ip_address} to access me..."   
-            send_sms(recipient_num, sender_num, message, auth_token, account_sid)
-            application_mode()
-    else:
-        print("Bad wifi connection! Either wrong credentials or wifi down...")
-        os.remove(WIFI_FILE)
-        os.remove(IP_ADDRESS)
-        machine_reset()    
-except Exception:
-    setup_mode()  
+                    wifi_current_attempt += 1
+        if is_connected_to_wifi():
+            try: 
+                os.stat(IP_ADDRESS)
+                print("Checking if IP address changed...")
+                with open(IP_ADDRESS) as f:                                          
+                    ip_address_status = json.load(f)
+                    if ip_address_status["ipa"] == ip_address:                       
+                        application_mode()
+                    else:
+                        print("Updating IP address in json file and sending message")                      
+                        json_ip_Data = {"ipa": ip_address}
+                        with open(IP_ADDRESS, "w") as f:
+                            json.dump(json_ip_Data, f)
+                        with open(WIFI_FILE) as f:
+                            wifi_info = json.load(f)
+                            recipient_num = '+1' + wifi_info["phone_number"]
+                        message = f"Hello! DrinkBot here again... \nclick http://{ip_address} to access me from now on."    
+                        send_sms(recipient_num, sender_num, message, auth_token, account_sid)
+                        application_mode()
+            except Exception: 
+                print("Drinkbot online, sending text message")                        
+                json_ip_Data = {"ipa": ip_address}      
+                with open(IP_ADDRESS, "w") as f:
+                    json.dump(json_ip_Data, f)
+                with open(WIFI_FILE) as f:
+                    wifi_info = json.load(f)
+                    recipient_num = '+1' + wifi_info["phone_number"]
+                message = f"Hello! DrinkBot here... \nClick http://{ip_address} to access me..."   
+                send_sms(recipient_num, sender_num, message, auth_token, account_sid)
+                application_mode()
+        else:
+            print("Bad wifi connection! Either wrong credentials or wifi down...")
+            os.remove(WIFI_FILE)
+            os.remove(IP_ADDRESS)
+            machine_reset()    
+    except Exception as e:
+        print(e)
+        print("Wifi file not found, entering setup mode...")
+        setup_mode()
 
-_thread.start_new_thread(polling, ())
+    if shared.drinkbot.has_hardware:
+        _thread.start_new_thread(polling, ())
 
-server.run()
+    server.run()
+
+
+if __file__ == "__main__":
+    main()
