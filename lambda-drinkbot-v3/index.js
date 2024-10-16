@@ -5,36 +5,38 @@ const serverless =require('serverless-http')
 const Alexa = require('ask-sdk-core');
 const axios = require('axios'); 
 
-// const { IoTDataPlaneClient, PublishCommand } = require('@aws-sdk/client-iot-data-plane');
-// const iotClient = new IoTDataPlaneClient({ region: 'us-west-2' });
-// const sendIotCoreMsg = async (payload) => {
-//   const publishCommand = new PublishCommand({
-//     topic: "pico",
-//     payload: JSON.stringify(payload),
-//     qos: 0
-//   });
-//   try {
-//     await iotClient.send(publishCommand);
-//   } catch (error) {
-//     console.error(error);
-//   }
-// }
 
-const AWS =require('aws-sdk');
-//const ddb = new AWS.DynamoDB.DocumentClient({region: 'eu-west-2'});
-var iotdata = new AWS.IotData({endpoint:"a17vu3qlg4e3g7-ats.iot.us-west-2.amazonaws.com"});
+const { IoTDataPlaneClient, PublishCommand } = require('@aws-sdk/client-iot-data-plane');
+const iotClient = new IoTDataPlaneClient({ region: 'us-west-2' });
 const sendIotCoreMsg = async (payload) => {
-  const params = {
-    topic: 'pico',
+  console.log(payload);
+  const publishCommand = new PublishCommand({
+    topic: "pico",
     payload: JSON.stringify(payload),
     qos: 0
-  };
-  iotdata.publish(params, function(err, data){
-    if(err){
-      console.log("Error occured : ",err);
-    }
   });
+  try {
+    await iotClient.send(publishCommand);
+  } catch (error) {
+    console.error(error);
+  }
 }
+
+// const AWS =require('aws-sdk');
+// //const ddb = new AWS.DynamoDB.DocumentClient({region: 'eu-west-2'});
+// var iotdata = new AWS.IotData({endpoint:"a17vu3qlg4e3g7-ats.iot.us-west-2.amazonaws.com"});
+// const sendIotCoreMsg = async (payload) => {
+//   const params = {
+//     topic: 'pico',
+//     payload: JSON.stringify(payload),
+//     qos: 0
+//   };
+//   iotdata.publish(params, function(err, data){
+//     if(err){
+//       console.log("Error occured : ",err);
+//     }
+//   });
+// }
 
 
 const tableName = 'alexaresponse';
@@ -212,7 +214,9 @@ const TestIntentHandler =  {
           await updateDatabase2(JSON.stringify(res));
           speechText = `Sure, now pouring ${drink} <break time="7s"/>Enjoy your ${drink},Can I pour you anything else`;
           shouldEndSession = false;
-          await sendIotCoreMsg({ intent: "pour", slots: { drink: drink }});
+          const picoMsg = { intent: "pour", slots: { drink: drink }};
+          console.log(picoMsg);
+          await sendIotCoreMsg(picoMsg);
           // await new Promise(resolve => setTimeout(resolve, 8050));
           // const result = await getresponse();
           // const alexastatus = result?.Items[0]?.status;
