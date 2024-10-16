@@ -18,11 +18,22 @@ def TurnOnLEDIntent():
 
 # Alexa callbacks
 def pour(drink):
+    if drink == "whiskey":
+        type_drink = "one"
+    elif drink == "wine":
+        type_drink = "two"
+    elif drink == "water":
+        type_drink = "three"
+    elif drink == "merlot":
+        type_drink = "four"
+    else:
+        print("Invalid drink type")
+        return
+
     if not shared.drinkbot.drinkbot_serving:
-        type_drink = drink
-        four_drink_amount = drink_bot.get_drink_amount(type_drink)
-        print(f"Alexa Dispensing Drink 4 for {four_drink_amount} seconds")
-        shared.drinkbot.dispense(type_drink, four_drink_amount)
+        drink_amount = drink_bot.get_drink_amount(type_drink)
+        print(f"Alexa Dispensing Drink {type_drink} ({drink}) for {drink_amount} seconds")
+        shared.drinkbot.dispense(type_drink, drink_amount)
     else:
         print("DrinkBot busy")  # Alexa grabs response here?
 
@@ -32,7 +43,6 @@ def PourDrinkOneIntent():
         type_drink = "one"
         one_drink_amount = drink_bot.get_drink_amount(type_drink)
         print(f"Alexa Dispensing Drink 1 for {one_drink_amount} seconds")
-        shared.drinkbot.banner_status += 1
         shared.drinkbot.dispense(type_drink, one_drink_amount)
     else:
         print("DrinkBot busy")  # Alexa grabs response here?
