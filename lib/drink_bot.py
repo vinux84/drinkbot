@@ -2,9 +2,11 @@ import machine
 import utime
 import json
 
+import config
+
+
 DRINKS = "drinks.json"
 
-drinkbot_serving = False
 cup = False
 banner_status = 0
 current_drink = None
@@ -12,6 +14,13 @@ current_amount = None
 
 
 class DrinkBot:
+    drinkbot_serving = False
+    no_hardware = config.NO_HARDWARE
+
+    @property
+    def has_hardware(self):
+        return not self.no_hardware
+
     def __init__(self):
         self.ir_sensor = machine.Pin(14, machine.Pin.IN, machine.Pin.PULL_DOWN)
         self.limit_switch_top = machine.Pin(11, machine.Pin.IN, machine.Pin.PULL_UP) 
@@ -24,6 +33,7 @@ class DrinkBot:
         self.drink_two_pump = machine.Pin(19, machine.Pin.OUT)
         self.drink_three_pump = machine.Pin(20, machine.Pin.OUT)
         self.drink_four_pump = machine.Pin(21, machine.Pin.OUT)
+        print("DrinkBot initialized", "(no hardware)" if self.no_hardware else "")
         
     def _cup_stop(self):
         self.server_motor_down.value(0)
@@ -60,6 +70,9 @@ class DrinkBot:
         self._pump_off(self.drink_four_pump)
         self._cup_stop()
         self._spout_up()
+        if self.no_hardware:
+            print("[NO HARDWARE] Skipping cup reset...")
+            return
         if self.limit_switch_top.value() == 1:
             self._cup_up()
             u = 1
@@ -91,17 +104,16 @@ class DrinkBot:
     def dispense(self, drink, drink_amount):
         self.drink = drink
         self.drink_amount = drink_amount
-        global drinkbot_serving
         global current_drink
         global current_amount
         global cup
         current_drink = drink
         current_amount = drink_amount
-        if not drinkbot_serving:
+        if not self.drinkbot_serving:
             if self.ir_sensor.value() == 0:
                 cup = True
                 if self.limit_switch_top.value() == 0:
-                    drinkbot_serving = True
+                    self.drinkbot_serving = True
                     utime.sleep(1) 
                     self._cup_down()
                     d = 1
@@ -122,7 +134,7 @@ class DrinkBot:
                                 if self.limit_switch_top.value() == 0:
                                     self._cup_stop()
                                     u -= 1
-                                    drinkbot_serving = False
+                                    self.drinkbot_serving = False
                                     current_drink = None
                                     current_amount = None
                             utime.sleep(5)
