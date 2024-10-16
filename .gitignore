@@ -1,3 +1,4 @@
 .mypy_cache/
 /.vscode/
 /.micropico
+node_modules/
