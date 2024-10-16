@@ -7,7 +7,7 @@
 				"iot:Connect"
 			],
 			"Resource": [
-				"arn:aws:iot:us-east-1:119032979749:client/${iot:Connection.Thing.ThingName}"
+				"arn:aws:iot:us-west-2:533267339310:client/${iot:Connection.Thing.ThingName}"
 			],
 			"Condition": {
 				"Bool": {
@@ -21,7 +21,7 @@
 				"iot:Publish"
 			],
 			"Resource": [
-				"arn:aws:iot:eu-west-1:119032979749:topic/pico"
+				"arn:aws:iot:us-west-2:533267339310:topic/pico"
 			]
 		},
 		{
@@ -30,7 +30,7 @@
 				"iot:Subscribe"
 			],
 			"Resource": [
-				"arn:aws:iot:eu-west-1:119032979749:topicfilter/pico"
+				"arn:aws:iot:us-west-2:533267339310:topicfilter/pico"
 			]
 		},
 		{
@@ -39,7 +39,7 @@
 				"iot:Receive"
 			],
 			"Resource": [
-				"arn:aws:iot:eu-west-1:119032979749:topic/pico"
+				"arn:aws:iot:us-west-2:533267339310:topic/pico"
 			]
 		}
 	]
