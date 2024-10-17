@@ -9,7 +9,7 @@ import ntptime
 
 from phew import access_point, connect_to_wifi, is_connected_to_wifi, dns, server
 from phew.template import render_template
-from lib import drink_bot
+from lib import drink_bot, keys
 import shared
 
 
@@ -21,9 +21,9 @@ WIFI_FILE = "wifi.json"
 IP_ADDRESS = "ip.json"
 DRINKS = "drinks.json"
 WIFI_MAX_ATTEMPTS = 3
-account_sid = 'account_ssid'
-auth_token = 'auth_token'
-sender_num = 'sender_num'
+account_sid = keys.TWILIO_ACCOUNT_SID
+auth_token = keys.TWILIO_AUTH_TOKEN
+sender_num = keys.TWILIO_SENDER_NUM 
 
 running_thread = False
 
