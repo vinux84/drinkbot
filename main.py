@@ -376,5 +376,4 @@ def main():
     server.run()
 
 
-if __file__ == "__main__":
-    main()
+main()
