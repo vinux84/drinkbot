@@ -58,7 +58,7 @@ class Request:
       self.query = _parse_query_string(self.query_string)
 
   def __str__(self):
-    return f"""
+    return f"""\r
 request: {self.method} {self.path} {self.protocol}
 headers: {self.headers}
 form: {self.form}
@@ -75,7 +75,7 @@ class Response:
     self.headers[name] = value
 
   def __str__(self):
-    return f"""
+    return f"""\r
 status: {self.status}
 headers: {self.headers}
 body: {self.body}"""
@@ -144,7 +144,7 @@ class Route:
     return self.handler(request, **parameters)
         
   def __str__(self):
-    return f"""
+    return f"""\r
 path: {self.path}
 methods: {self.methods}
 """
