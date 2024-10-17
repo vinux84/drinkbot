@@ -414,6 +414,9 @@ async def mqtt_poll():
         while is_connected_to_wifi():
             mqtt_listen(mqtt_client)
             await uasyncio.sleep(1)
+        print(f"Stopped listening to {keys.MQTT_TOPIC}: disconnected from wifi.")
+    else
+        print(f"Can't listen to {keys.MQTT_TOPIC}: disconnected from wifi.")
 
 # run server and mqtt poll if online
 def run(host = "0.0.0.0", port = 80):
