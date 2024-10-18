@@ -9,7 +9,7 @@ import ntptime
 
 from phew import access_point, connect_to_wifi, is_connected_to_wifi, dns, server
 from phew.template import render_template
-from lib import drink_bot
+from lib import drink_bot, keys
 import shared
 
 
@@ -21,9 +21,9 @@ WIFI_FILE = "wifi.json"
 IP_ADDRESS = "ip.json"
 DRINKS = "drinks.json"
 WIFI_MAX_ATTEMPTS = 3
-account_sid = 'account_ssid'
-auth_token = 'auth_token'
-sender_num = 'sender_num'
+account_sid = keys.TWILIO_ACCOUNT_SID
+auth_token = keys.TWILIO_AUTH_TOKEN
+sender_num = keys.TWILIO_SENDER_NUM 
 
 running_thread = False
 
@@ -58,7 +58,7 @@ def polling():
             if button_presses == 1:
                 print("button one pressed")
                 one_drink_a = drink_bot.get_drink_amount('one')
-                drinkbot.dispense('one', one_drink_a)
+                shared.drinkbot.dispense('one', one_drink_a)
                 button_presses = 0
         elif ((drink_two_button.value() is 1) and (utime.ticks_ms()-debounce) > 500):
             button_presses+=1
@@ -66,7 +66,7 @@ def polling():
             if button_presses == 1:
                 print("button two pressed")
                 two_drink_a = drink_bot.get_drink_amount('two')
-                drinkbot.dispense('two', two_drink_a)
+                shared.drinkbot.dispense('two', two_drink_a)
                 button_presses = 0
         elif ((drink_three_button.value() is 1) and (utime.ticks_ms()-debounce) > 500):
             button_presses+=1
@@ -74,7 +74,7 @@ def polling():
             if button_presses == 1:
                 print("button three pressed")
                 three_drink_a = drink_bot.get_drink_amount('three')
-                drinkbot.dispense('three', three_drink_a)
+                shared.drinkbot.dispense('three', three_drink_a)
                 button_presses = 0
         elif ((drink_four_button.value() is 1) and (utime.ticks_ms()-debounce) > 500):
             button_presses+=1
@@ -82,7 +82,7 @@ def polling():
             if button_presses == 1:
                 print("button four pressed")
                 four_drink_a = drink_bot.get_drink_amount('four')
-                drinkbot.dispense('four', four_drink_a)
+                shared.drinkbot.dispense('four', four_drink_a)
                 button_presses = 0
 
 def machine_reset():
@@ -202,7 +202,7 @@ def application_mode():
 
     def dispense_status(request):
         gc.collect()
-        if drinkbot.ir_sensor.value() == 1:
+        if shared.drinkbot.ir_sensor.value() == 1:
             drink_bot.cup = False
             no_cup = "nocup"
             return f"{no_cup}"
@@ -227,53 +227,53 @@ def application_mode():
     def drink_one_prime(request):   
         type_drink = 'one'       
         print("priming drink 1")
-        drinkbot.dispense(type_drink, 4)
+        shared.drinkbot.dispense(type_drink, 4)
         return 'OK'
     
     def drink_one(request):
         type_drink = 'one'                                         
         one_drink_amount = drink_bot.get_drink_amount(type_drink)
         print(f'Dispensing Drink 1 for {one_drink_amount} seconds')
-        drinkbot.dispense(type_drink, one_drink_amount)
+        shared.drinkbot.dispense(type_drink, one_drink_amount)
         return 'OK'
     
     def drink_two_prime(request): 
         type_drink = 'two'
         print("priming drink 2")
-        drinkbot.dispense(type_drink, 4)
+        shared.drinkbot.dispense(type_drink, 4)
         return 'OK'
     
     def drink_two(request):                                            
         type_drink = 'two'                                         
         two_drink_amount = drink_bot.get_drink_amount(type_drink)
         print(f'Dispensing Drink 2 for {two_drink_amount} seconds')
-        drinkbot.dispense(type_drink, two_drink_amount)  
+        shared.drinkbot.dispense(type_drink, two_drink_amount)  
         return 'OK'
     
     def drink_three_prime(request): 
         type_drink = 'three'  
         print("priming drink 3")
-        drinkbot.dispense(type_drink, 4)
+        shared.drinkbot.dispense(type_drink, 4)
         return 'OK'
     
     def drink_three(request):                                          
         type_drink = 'three'                                         
         three_drink_amount = drink_bot.get_drink_amount(type_drink)
         print(f'Dispensing Drink 3 for {three_drink_amount} seconds')
-        drinkbot.dispense(type_drink, three_drink_amount) 
+        shared.drinkbot.dispense(type_drink, three_drink_amount) 
         return 'OK'
     
     def drink_four_prime(request): 
         type_drink = 'four'
         print("priming drink 4")
-        drinkbot.dispense(type_drink, 4)
+        shared.drinkbot.dispense(type_drink, 4)
         return 'OK'
     
     def drink_four(request):                                          
         type_drink = 'four'                                         
         four_drink_amount = drink_bot.get_drink_amount(type_drink)
         print(f'Dispensing Drink 4 for {four_drink_amount} seconds')
-        drinkbot.dispense(type_drink, four_drink_amount)
+        shared.drinkbot.dispense(type_drink, four_drink_amount)
         return 'OK'
 
 # Resetting DrinkBot settings
@@ -288,7 +288,7 @@ def application_mode():
         with open(DRINKS, "w") as f:
             json.dump(drink_data, f) 
 
-        if drinkbot.has_hardware:
+        if shared.drinkbot.has_hardware:
             global running_thread
             running_thread = False   
             utime.sleep(1)
