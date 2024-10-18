@@ -212,7 +212,7 @@ const TestIntentHandler =  {
           /////**********if alexa get valid drink gives this response**********
           const res =   {"response":{"outputSpeech":{"type":"PlainText","text":"Sure, now pouring "+drink},"card":{"type":"Simple","title":drink,"content":"Sure, now pouring "+drink},"shouldEndSession":false}}
           await updateDatabase2(JSON.stringify(res));
-          speechText = `Sure, now pouring ${drink} <break time="30s"/>Enjoy your ${drink},Can I pour you anything else`;
+          speechText = `Sure... <break time="7s"/> Now pouring ${drink} <break time="5s"/>Enjoy your ${drink}.<break time="5s"/>Can I pour you anything else?`;
           shouldEndSession = false;
           const picoMsg = { intent: "pour", slots: { drink: drink }};
           console.log(picoMsg);
