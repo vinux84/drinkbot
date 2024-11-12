@@ -47,58 +47,63 @@ def send_sms(recipient, sender, message, auth_token, account_sid):
 def polling():
     global running_thread
     running_thread = True
-    button_presses = 0
     debounce = 0
     while running_thread:
         gc.collect()
-        utime.sleep(.10)
+        button_presses = 0
         if ((drink_one_button.value() is 1) and (utime.ticks_ms()-debounce) > 500):
             button_presses+=1
             debounce=utime.ticks_ms()
+            utime.sleep_ms(40)
+            if drink_two_button.value() is 1:
+                button_presses+=1    
             if button_presses == 1:
                 print("button one pressed")
                 one_drink_a = drink_bot.get_drink_amount('one')
                 shared.drinkbot.dispense('one', one_drink_a)
-                button_presses = 0
+            elif button_presses == 2:
+                print("button one and two pressed, moving cup up")
+                shared.drinkbot.holder_up()  
         elif ((drink_two_button.value() is 1) and (utime.ticks_ms()-debounce) > 500):
             button_presses+=1
             debounce=utime.ticks_ms()
+            utime.sleep_ms(40)
+            if drink_one_button.value() is 1:
+                button_presses+=1    
             if button_presses == 1:
                 print("button two pressed")
                 two_drink_a = drink_bot.get_drink_amount('two')
                 shared.drinkbot.dispense('two', two_drink_a)
-                button_presses = 0
+            elif button_presses == 2:
+                print("button one and two pressed, moving cup up")
+                shared.drinkbot.holder_up()    
         elif ((drink_three_button.value() is 1) and (utime.ticks_ms()-debounce) > 500):
             button_presses+=1
             debounce=utime.ticks_ms()
+            utime.sleep_ms(40)
+            if drink_four_button.value() is 1:
+                button_presses+=1 
             if button_presses == 1:
                 print("button three pressed")
                 three_drink_a = drink_bot.get_drink_amount('three')
                 shared.drinkbot.dispense('three', three_drink_a)
-                button_presses = 0
+            elif button_presses == 2:
+                print("button three and four pressed, moving cup down")
+                shared.drinkbot.holder_down() 
         elif ((drink_four_button.value() is 1) and (utime.ticks_ms()-debounce) > 500):
             button_presses+=1
             debounce=utime.ticks_ms()
+            utime.sleep_ms(40)
+            if drink_three_button.value() is 1:
+                button_presses+=1 
             if button_presses == 1:
                 print("button four pressed")
                 four_drink_a = drink_bot.get_drink_amount('four')
                 shared.drinkbot.dispense('four', four_drink_a)
-                button_presses = 0
-        elif ((drink_one_button.value() is 1) and (drink_two_button.value() is 1) and (utime.ticks_ms()-debounce) > 500):
-            button_presses+=1
-            debounce=utime.ticks_ms()
-            if button_presses == 1:
-                print("button one and two pressed, moving cup up")
-                shared.drinkbot.holder_up()
-                button_presses = 0
-        elif ((drink_three_button.value() is 1) and (drink_four_button.value() is 1) and (utime.ticks_ms()-debounce) > 500):
-            button_presses+=1
-            debounce=utime.ticks_ms()
-            if button_presses == 1:
+            elif button_presses == 2:
                 print("button three and four pressed, moving cup down")
-                shared.drinkbot.holder_down()
-                button_presses = 0
-
+                shared.drinkbot.holder_down()  
+                
 def machine_reset():
     utime.sleep(3)
     print("Resetting...")
