@@ -62,14 +62,17 @@ class DrinkBot:
 
     def _pump_off(self, pump_num):
         self.pump_num = pump_num.value(0)
-        
-    def reset(self):
+
+    def _stop_drinkbot(self):
         self._pump_off(self.drink_one_pump)
         self._pump_off(self.drink_two_pump)
         self._pump_off(self.drink_three_pump)
         self._pump_off(self.drink_four_pump)
         self._cup_stop()
         self._spout_up()
+
+    def reset(self):
+        self._stop_drinkbot()
         if self.no_hardware:
             print("[NO HARDWARE] Skipping cup reset...")
             return
@@ -80,7 +83,14 @@ class DrinkBot:
                 if self.limit_switch_top.value() == 0:
                     self._cup_stop()
                     u -= 1
-                    
+
+    def holder_up(self):
+        self._stop_drinkbot()
+        if self.limit_switch_top.value() == 1:
+            self._cup_up()
+            utime.sleep(.25)
+            self._cup_stop()
+
     def _dispense_drink(self, drink, drink_amount):
         self.drink = drink
         self.drink_amount = drink_amount                         
