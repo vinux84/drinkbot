@@ -88,7 +88,7 @@ class DrinkBot:
         self._stop_drinkbot()
         if self.limit_switch_top.value() == 1:
             self._cup_up()
-            utime.sleep(.25)
+            utime.sleep(.10)
             self._cup_stop()
         else:
             print("Cup holder is at the top")
@@ -97,7 +97,7 @@ class DrinkBot:
         self._stop_drinkbot()
         if self.limit_switch_bottom.value() == 1:
             self._cup_down()
-            utime.sleep(.25)
+            utime.sleep(.10)
             self._cup_stop()
         else:
             print("Cup holder is at the bottom")
