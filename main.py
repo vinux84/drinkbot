@@ -31,6 +31,7 @@ drink_one_button = machine.Pin(0, machine.Pin.IN, machine.Pin.PULL_DOWN)
 drink_two_button = machine.Pin(2, machine.Pin.IN, machine.Pin.PULL_DOWN)
 drink_three_button = machine.Pin(4, machine.Pin.IN, machine.Pin.PULL_DOWN)  
 drink_four_button = machine.Pin(6, machine.Pin.IN, machine.Pin.PULL_DOWN)
+reset_relay = machine.Pin(28, machine.Pin.OUT)
 
 def send_sms(recipient, sender, message, auth_token, account_sid):
     headers = {'Content-Type': 'application/x-www-form-urlencoded'}
@@ -44,6 +45,22 @@ def send_sms(recipient, sender, message, auth_token, account_sid):
         print("Error sending SMS: {}".format(response.text))
     response.close()
 
+def hard_reset():
+    print("Hard Resetting Drinkbot")
+    try:
+        os.remove(DRINKS)
+        os.remove(WIFI_FILE)
+        os.remove(IP_ADDRESS)
+    except Exception as e:
+        print(f"{e} - File not found")
+        
+    drink_data = {"drink_one_state": "off", "drink_one_name": "Drink name", "drink_one_amount": "1.5 oz. (Single)",
+                  "drink_two_state": "off", "drink_two_name": "Drink name", "drink_two_amount": "1.5 oz. (Single)",
+                  "drink_three_state": "off", "drink_three_name": "Drink name", "drink_three_amount": "1.5 oz. (Single)",
+                  "drink_four_state": "off", "drink_four_name": "Drink name", "drink_four_amount": "1.5 oz. (Single)"}
+    with open(DRINKS, "w") as f:
+        json.dump(drink_data, f)
+
 def polling():
     global running_thread
     running_thread = True
@@ -56,14 +73,19 @@ def polling():
             debounce=utime.ticks_ms()
             utime.sleep_ms(40)
             if drink_two_button.value() is 1:
-                button_presses+=1    
+                button_presses+=1
+            if drink_four_button.value() is 1:
+                button_presses+=2
             if button_presses == 1:
                 print("button one pressed")
                 one_drink_a = drink_bot.get_drink_amount('one')
                 shared.drinkbot.dispense('one', one_drink_a)
             elif button_presses == 2:
                 print("button one and two pressed, moving cup up")
-                shared.drinkbot.holder_up()  
+                shared.drinkbot.holder_up()
+            elif button_presses == 3:
+                hard_reset()
+                reset_relay.value(1)
         elif ((drink_two_button.value() is 1) and (utime.ticks_ms()-debounce) > 500):
             button_presses+=1
             debounce=utime.ticks_ms()
@@ -95,15 +117,20 @@ def polling():
             debounce=utime.ticks_ms()
             utime.sleep_ms(40)
             if drink_three_button.value() is 1:
-                button_presses+=1 
+                button_presses+=1
+            if drink_one_button.value() is 1:
+                button_presses+=2
             if button_presses == 1:
                 print("button four pressed")
                 four_drink_a = drink_bot.get_drink_amount('four')
                 shared.drinkbot.dispense('four', four_drink_a)
             elif button_presses == 2:
                 print("button three and four pressed, moving cup down")
-                shared.drinkbot.holder_down()  
-                
+                shared.drinkbot.holder_down()
+            elif button_presses == 3:
+                hard_reset()
+                reset_relay.value(1)
+
 def machine_reset():
     utime.sleep(3)
     print("Resetting...")
@@ -297,23 +324,13 @@ def application_mode():
 
 # Resetting DrinkBot settings
     def app_reset(request):                                            
-        os.remove(WIFI_FILE)
-        os.remove(IP_ADDRESS)
-        os.remove(DRINKS)
-        drink_data = {"drink_one_state": "off", "drink_one_name": "Drink name", "drink_one_amount": "1.5 oz. (Single)",
-                      "drink_two_state": "off", "drink_two_name": "Drink name", "drink_two_amount": "1.5 oz. (Single)",
-                      "drink_three_state": "off", "drink_three_name": "Drink name", "drink_three_amount": "1.5 oz. (Single)",
-                      "drink_four_state": "off", "drink_four_name": "Drink name", "drink_four_amount": "1.5 oz. (Single)"}
-        with open(DRINKS, "w") as f:
-            json.dump(drink_data, f) 
-
+        hard_reset()
         if shared.drinkbot.has_hardware:
             global running_thread
             running_thread = False   
             utime.sleep(1)
             _thread.start_new_thread(machine_reset, ())
         return render_template(f"{APP_TEMPLATE_PATH}/reset.html", access_point_ssid = AP_NAME)
-
     def app_catch_all(request):
         return "Not found.", 404
 
