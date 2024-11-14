@@ -74,8 +74,6 @@ def polling():
             utime.sleep_ms(40)
             if drink_two_button.value() is 1:
                 button_presses+=1
-            if drink_four_button.value() is 1:
-                button_presses+=2
             if button_presses == 1:
                 print("button one pressed")
                 one_drink_a = drink_bot.get_drink_amount('one')
@@ -83,9 +81,6 @@ def polling():
             elif button_presses == 2:
                 print("button one and two pressed, moving cup up")
                 shared.drinkbot.holder_up()
-            elif button_presses == 3:
-                hard_reset()
-                reset_relay.value(1)
         elif ((drink_two_button.value() is 1) and (utime.ticks_ms()-debounce) > 500):
             button_presses+=1
             debounce=utime.ticks_ms()
@@ -118,8 +113,6 @@ def polling():
             utime.sleep_ms(40)
             if drink_three_button.value() is 1:
                 button_presses+=1
-            if drink_one_button.value() is 1:
-                button_presses+=2
             if button_presses == 1:
                 print("button four pressed")
                 four_drink_a = drink_bot.get_drink_amount('four')
@@ -127,10 +120,7 @@ def polling():
             elif button_presses == 2:
                 print("button three and four pressed, moving cup down")
                 shared.drinkbot.holder_down()
-            elif button_presses == 3:
-                hard_reset()
-                reset_relay.value(1)
-
+        
 def machine_reset():
     utime.sleep(3)
     print("Resetting...")
