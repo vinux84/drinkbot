@@ -12,7 +12,6 @@ from phew.template import render_template
 from lib import drink_bot, keys
 import shared
 
-
 AP_NAME = "DrinkBot"
 AP_DOMAIN = "drinkbot.io"
 AP_TEMPLATE_PATH = "ap_templates"
@@ -24,14 +23,12 @@ WIFI_MAX_ATTEMPTS = 3
 account_sid = keys.TWILIO_ACCOUNT_SID
 auth_token = keys.TWILIO_AUTH_TOKEN
 sender_num = keys.TWILIO_SENDER_NUM 
-
 running_thread = False
 
 drink_one_button = machine.Pin(0, machine.Pin.IN, machine.Pin.PULL_DOWN) 
 drink_two_button = machine.Pin(2, machine.Pin.IN, machine.Pin.PULL_DOWN)
 drink_three_button = machine.Pin(4, machine.Pin.IN, machine.Pin.PULL_DOWN)  
 drink_four_button = machine.Pin(6, machine.Pin.IN, machine.Pin.PULL_DOWN)
-reset_relay = machine.Pin(28, machine.Pin.OUT)
 
 def send_sms(recipient, sender, message, auth_token, account_sid):
     headers = {'Content-Type': 'application/x-www-form-urlencoded'}
@@ -321,6 +318,7 @@ def application_mode():
             utime.sleep(1)
             _thread.start_new_thread(machine_reset, ())
         return render_template(f"{APP_TEMPLATE_PATH}/reset.html", access_point_ssid = AP_NAME)
+
     def app_catch_all(request):
         return "Not found.", 404
 
