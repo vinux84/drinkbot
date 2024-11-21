@@ -63,6 +63,7 @@ def polling():
     running_thread = True
     debounce = 0
     while running_thread:
+        utime.sleep(.10)
         gc.collect()
         button_presses = 0
         if ((drink_one_button.value() is 1) and (utime.ticks_ms()-debounce) > 500):
@@ -251,7 +252,7 @@ def application_mode():
                     print(current_drink_info)
                     return f'{current_drink_info}'
             elif drink_bot.banner_status == 1:
-                if drink_bot.drinkbot_serving == False:
+                if shared.drinkbot.drinkbot_serving == False:
                     drink_bot.banner_status = 0
                 no_cup = "nocup"
                 return f"{no_cup}"
