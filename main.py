@@ -172,15 +172,23 @@ def application_mode():
         with open(DRINKS) as f:                       
             drink_db = json.load(f)
             drinkones = drink_db['drink_one_state']
+            if drinkones == "off":
+                drinkones = "disabled"
             drinkonen = drink_db['drink_one_name']
             drinkonea = drink_db['drink_one_amount']
             drinktwos = drink_db['drink_two_state']
+            if drinktwos == "off":
+                drinktwos = "disabled"
             drinktwon = drink_db['drink_two_name']
             drinktwoa = drink_db['drink_two_amount']
             drinkthrees = drink_db['drink_three_state']
+            if drinkthrees == "off":
+                drinkthrees = "disabled"
             drinkthreen = drink_db['drink_three_name']
             drinkthreea = drink_db['drink_three_amount']
             drinkfours = drink_db['drink_four_state']
+            if drinkfours == "off":
+                drinkfours = "disabled"
             drinkfourn = drink_db['drink_four_name']
             drinkfoura = drink_db['drink_four_amount']
                 
