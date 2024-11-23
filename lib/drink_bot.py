@@ -8,7 +8,7 @@ import config
 DRINKS = "drinks.json"
 
 cup = False
-banner_status = 0
+button_dispense = False
 current_drink = None
 current_amount = None
 

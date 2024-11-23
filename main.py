@@ -50,7 +50,6 @@ def hard_reset():
         os.remove(IP_ADDRESS)
     except Exception as e:
         print(f"{e} - File not found")
-        
     drink_data = {"drink_one_state": "off", "drink_one_name": "Drink name", "drink_one_amount": "1.5 oz. (Single)",
                   "drink_two_state": "off", "drink_two_name": "Drink name", "drink_two_amount": "1.5 oz. (Single)",
                   "drink_three_state": "off", "drink_three_name": "Drink name", "drink_three_amount": "1.5 oz. (Single)",
@@ -74,6 +73,7 @@ def polling():
                 button_presses+=1
             if button_presses == 1:
                 print("button one pressed")
+                drink_bot.button_dispense = True
                 one_drink_a = drink_bot.get_drink_amount('one')
                 shared.drinkbot.dispense('one', one_drink_a)
             elif button_presses == 2:
@@ -87,6 +87,7 @@ def polling():
                 button_presses+=1    
             if button_presses == 1:
                 print("button two pressed")
+                drink_bot.button_dispense = True
                 two_drink_a = drink_bot.get_drink_amount('two')
                 shared.drinkbot.dispense('two', two_drink_a)
             elif button_presses == 2:
@@ -100,6 +101,7 @@ def polling():
                 button_presses+=1 
             if button_presses == 1:
                 print("button three pressed")
+                drink_bot.button_dispense = True
                 three_drink_a = drink_bot.get_drink_amount('three')
                 shared.drinkbot.dispense('three', three_drink_a)
             elif button_presses == 2:
@@ -113,6 +115,7 @@ def polling():
                 button_presses+=1
             if button_presses == 1:
                 print("button four pressed")
+                drink_bot.button_dispense = True
                 four_drink_a = drink_bot.get_drink_amount('four')
                 shared.drinkbot.dispense('four', four_drink_a)
             elif button_presses == 2:
@@ -124,23 +127,19 @@ def machine_reset():
     print("Resetting...")
     machine.reset()
 
-# setup mode to grab users wifi credentials
 def setup_mode():                                                             
     print("Entering setup mode...")
     
     def ap_index(request):
         if request.headers.get("host").lower() != AP_DOMAIN.lower():
             return render_template(f"{AP_TEMPLATE_PATH}/redirect.html", domain = AP_DOMAIN.lower())
-
         return render_template(f"{AP_TEMPLATE_PATH}/index.html")
 
     def ap_configure(request):
         print("Saving wifi credentials & phone number...")
-
         with open(WIFI_FILE, "w") as f:
             json.dump(request.form, f)
             f.close()
-        
         global running_thread
         running_thread = False     
         utime.sleep(1)                                                                 
@@ -150,7 +149,6 @@ def setup_mode():
     def ap_catch_all(request):
         if request.headers.get("host") != AP_DOMAIN:
             return render_template(f"{AP_TEMPLATE_PATH}/redirect.html", domain = AP_DOMAIN)
-
         return "Not found.", 404
 
     server.add_route("/", handler = ap_index, methods = ["GET"])
@@ -168,7 +166,6 @@ def application_mode():
 
     def app_index(request):
         gc.collect()
-        
         with open(DRINKS) as f:                       
             drink_db = json.load(f)
             drinkones = drink_db['drink_one_state']
@@ -191,7 +188,6 @@ def application_mode():
                 drinkfours = "disabled"
             drinkfourn = drink_db['drink_four_name']
             drinkfoura = drink_db['drink_four_amount']
-                
         return render_template(f"{APP_TEMPLATE_PATH}/index.html",
                                drink_one_state=drinkones, drink_one_name=drinkonen, drink_one_amount=drinkonea,
                                drink_two_state=drinktwos, drink_two_name=drinktwon, drink_two_amount=drinktwoa,
@@ -200,10 +196,8 @@ def application_mode():
     
     def edit_drinks(request):
         gc.collect()
-
         for key, value in request.form.items():    
             drink_bot.update_drinks(key, value)
-        
         with open(DRINKS) as f:
             drink_db = json.load(f)
             drinkones = drink_db['drink_one_state']
@@ -233,37 +227,31 @@ def application_mode():
             else:
                 drink_four_toggle = ''
             drinkfourn = drink_db['drink_four_name']
-            drinkfoura = drink_db['drink_four_amount']
-                
+            drinkfoura = drink_db['drink_four_amount'] 
         return render_template(f"{APP_TEMPLATE_PATH}/edit.html",
                                drink_one_t=drink_one_toggle, drink_one_state=drinkones, drink_one_name=drinkonen, drink_one_amount=drinkonea,
                                drink_two_t=drink_two_toggle, drink_two_state=drinktwos, drink_two_name=drinktwon, drink_two_amount=drinktwoa,
                                drink_three_t=drink_three_toggle, drink_three_state=drinkthrees, drink_three_name=drinkthreen, drink_three_amount=drinkthreea,
                                drink_four_t=drink_four_toggle, drink_four_state=drinkfours, drink_four_name=drinkfourn, drink_four_amount=drinkfoura)
 
-
     def dispense_status(request):
         gc.collect()
         if shared.drinkbot.ir_sensor.value() == 1:
             drink_bot.cup = False
             no_cup = "nocup"
+            print(f"t1 {no_cup}")
             return f"{no_cup}"
         else:
             drink_bot.cup = True
             yes_cup = "yescup"
-            if drink_bot.banner_status == 0:
-                if not drink_bot.current_drink == None:
-                    drink_bot.banner_status += 1
-                    drink_n = drink_bot.current_drink
-                    drink_a = drink_bot.current_amount
-                    current_drink_info = f"{drink_n} {drink_a}"
-                    print(current_drink_info)
-                    return f'{current_drink_info}'
-            elif drink_bot.banner_status == 1:
-                if shared.drinkbot.drinkbot_serving == False:
-                    drink_bot.banner_status = 0
-                no_cup = "nocup"
-                return f"{no_cup}"
+            if drink_bot.button_dispense == True:
+                drink_n = drink_bot.current_drink
+                drink_a = drink_bot.current_amount
+                current_drink_info = f"{drink_n} {drink_a}"
+                print(f"t2 {current_drink_info}")
+                drink_bot.button_dispense = False
+                return f'{current_drink_info}'
+            print(f"t4 {yes_cup}")
             return f'{yes_cup}'
     
     def drink_one_prime(request):   
@@ -318,7 +306,6 @@ def application_mode():
         shared.drinkbot.dispense(type_drink, four_drink_amount)
         return 'OK'
 
-# Resetting DrinkBot settings
     def app_reset(request):                                            
         hard_reset()
         if shared.drinkbot.has_hardware:
@@ -350,7 +337,6 @@ def application_mode():
 
 def main():
     shared.drinkbot.reset()
-
     try:
         os.stat(WIFI_FILE)
         with open(WIFI_FILE) as f:
@@ -407,6 +393,5 @@ def main():
         _thread.start_new_thread(polling, ())
 
     server.run()
-
 
 main()
