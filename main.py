@@ -239,7 +239,6 @@ def application_mode():
         if shared.drinkbot.ir_sensor.value() == 1:
             drink_bot.cup = False
             no_cup = "nocup"
-            print(f"t1 {no_cup}")
             return f"{no_cup}"
         else:
             drink_bot.cup = True
@@ -248,10 +247,8 @@ def application_mode():
                 drink_n = drink_bot.current_drink
                 drink_a = drink_bot.current_amount
                 current_drink_info = f"{drink_n} {drink_a}"
-                print(f"t2 {current_drink_info}")
                 drink_bot.button_dispense = False
                 return f'{current_drink_info}'
-            print(f"t4 {yes_cup}")
             return f'{yes_cup}'
     
     def drink_one_prime(request):   
