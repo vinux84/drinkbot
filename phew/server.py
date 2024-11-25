@@ -391,7 +391,7 @@ def mqtt_connect(client):
     print("Connecting to MQTT Broker ...")
     client.connect()
     client.subscribe(keys.MQTT_TOPIC)
-    print("Connected to MQTT Broker\n")
+    print("Connected to MQTT Broker")
 
 def mqtt_listen(client):
     global listen_counter
@@ -403,7 +403,7 @@ def mqtt_listen(client):
 def mqtt_disconnect(client):
     print("Disconnecting from MQTT Broker ...")
     client.disconnect()
-    print("Disconnected from MQTT Broker\n")
+    print("Disconnected from MQTT Broker")
 
 async def mqtt_poll():
     global listen_counter
