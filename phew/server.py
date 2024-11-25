@@ -418,11 +418,14 @@ async def mqtt_poll():
     else:
         print(f"Can't listen to {keys.MQTT_TOPIC}: disconnected from wifi.")
 
+async def main(host, port):
+    uasyncio.create_task(uasyncio.start_server(_handle_request, host, port))
+    uasyncio.create_task(mqtt_poll())
+
 # run server and mqtt poll if online
 def run(host = "0.0.0.0", port = 80):
   logging.info("> starting web server on port {}".format(port))
-  loop.create_task(uasyncio.start_server(_handle_request, host, port))
-  loop.create_task(mqtt_poll())
+  loop.create_task(main(host, port))
   loop.run_forever()
 
 def stop():
