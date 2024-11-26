@@ -12,7 +12,22 @@
 <div class="text-white text-center">
   <h1 class="display-1 fw-bold">DrinkBot</h1>
 </div>
-<br/>
+<div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="alert alert-danger d-flex align-items-center alert-dismissible fade show" role="alert">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-exclamation-triangle-fill flex-shrink-0 me-2" viewBox="0 0 16 16" role="img" aria-label="Warning:">
+                <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+            </svg>
+            <div>
+                Oops, dont forget the cup!                
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    </div>
+</div>
+<div class="progress" style="height: 30px; background-color:#0f1012;">
+    <div class="progress-bar progress-bar-striped progress-bar-animated bg-secondary" role="progressbar" id="statusvalue" style="width: 0%"></div>
+</div>
 <br/>
 <div class="row">
     <h1 class="display-3 fw-normal text-begin text-white">Edit Center:</h1>
@@ -43,7 +58,7 @@
         </div>
         <div class="col-4">
             <div class="container text-center">
-                <button type="button" class="btn btn-warning" id="drink_one_prime">Prime</button>
+                <button type="button" class="btn btn-warning" onclick="drinkOneP()" id="drink_one_prime">Prime</button>
             </div>
         </div>  
     </div>
@@ -74,7 +89,7 @@
         </div>
         <div class="col-4">
             <div class="container text-center">
-                <button type="button" class="btn btn-warning" id="drink_two_prime">Prime</button>
+                <button type="button" class="btn btn-warning" onclick="drinkTwoP()" id="drink_two_prime">Prime</button>
             </div>
         </div>  
     </div>
@@ -104,7 +119,7 @@
         </div>
         <div class="col-4">
             <div class="container text-center">
-                <button type="button" class="btn btn-warning" id="drink_three_prime">Prime</button>
+                <button type="button" class="btn btn-warning" onclick="drinkThreeP()" id="drink_three_prime">Prime</button>
             </div>
         </div>  
     </div>
@@ -121,7 +136,7 @@
 </div>    
     <div class="row">
         <div class="col-4">
-            <input type="text" class="form-control" onchange="inputChange()" id="drink_four_name" name="drink_four_name" placeholder="{{drink_three_name}}">
+            <input type="text" class="form-control" onchange="inputChange()" id="drink_four_name" name="drink_four_name" placeholder="{{drink_four_name}}">
         </div>
         <div class="col-4">
             <select class="form-select" style="width:auto;" onchange="inputChange()" id="drink_four_amount" name="drink_four_amount" aria-label="drink_four_amount">
@@ -134,7 +149,7 @@
         </div>
         <div class="col-4">
             <div class="container text-center">
-                <button type="button" class="btn btn-warning" id="drink_four_prime">Prime</button>
+                <button type="button" class="btn btn-warning" onclick="drinkFourP()" id="drink_four_prime">Prime</button>
             </div>
         </div>  
     </div>
@@ -334,14 +349,141 @@
         }
         document.getElementById("save").disabled = true;
         sleep(1200).then(() => {window.location.href = "/edit";});
-    }    
+    }
+    
+    function progress_bar(drink_name, drink_amount, pump_number) {
+        ed_drinks(true)
+        var drink_amount_split = drink_amount.split(" ");
+        var drink_num = drink_amount_split[0];
+        var num_length = drink_num.length;
+        if (num_length === 3) {
+            var float_array = drink_num.split(".");
+            var first = float_array[0];
+            var second = float_array[1];
+            var together = first + second + "00";
+            var num = Number(together);
+        } else
+            if (num_length === 1) {
+                var together = drink_num + "000";
+                var check_num = Number(together);
+                if (check_num === 3000) {
+                    var num = check_num;
+                } else
+                    if (check_num === 4000) {
+                        var num = check_num + 250;
+                    } else
+                        if (check_num === 5000) {
+                            var num = check_num + 500;
+                        }
+        }  
+        var total_seconds = num + 18000;
+        var value = 0;
+        let id = setInterval(function(){
+            value++;
+            document.getElementById('statusvalue').innerHTML = value + "% - " + " Priming Pump " + pump_number + " (" + drink_name + ")";
+            document.getElementById('statusvalue').style.width = value + "%";
+            if (value >= 100){
+                clearInterval(id);
+                document.getElementById('statusvalue').style.width = "100%";
+                document.getElementById('statusvalue').innerHTML = "100% - Finished Priming Pump " + pump_number + " (" + drink_name + ")";
+                setTimeout(stop_bar, 5000);
+            }
+        }, total_seconds / 100); 
+    }
+    
+    function stop_bar() {
+        document.getElementById('statusvalue').style.width = "0%";
+        ed_drinks(false)
+    }
+    
+    function ed_drinks(drink_bool) {
+        if (drinkOnestate.checked) {
+            drinkOneprime.disabled = drink_bool;
+        } if (drinkTwostate.checked) {
+            drinkTwoprime.disabled = drink_bool;
+        } if (drinkThreestate.checked) {
+            drinkThreeprime.disabled = drink_bool;
+        } if (drinkFourstate.checked) {
+            drinkFourprime.disabled = drink_bool;
+        }
+    }
+    
+    var myModal = new bootstrap.Modal(document.getElementById("myModal"),{});
+    let cup_status = false;
+    
+    function cupTrue() {
+        cup_status = true;
+    }
+    
+    function cupFalse() {
+        cup_status = false;
+    }
+    
+    let prime_time = "4 oz." 
+    
+    async function drinkOneP() {
+        if (cup_status) {
+            myModal.hide()
+            const drinkOnename_value = drinkOnename.value;
+            if (drinkOnename_value) {
+                progress_bar(drinkOnename_value, prime_time, "One")
+            } else {
+                progress_bar(drink_one_n, prime_time, "One")
+            }
+            await fetch('/drink_one_prime');
+        } else {
+            myModal.show()
+        } 
+    }
+    
+    async function drinkTwoP() {
+        if (cup_status) {
+            myModal.hide()
+            const drinkTwoname_value = drinkTwoname.value;
+            if (drinkTwoname_value) {
+                progress_bar(drinkTwoname_value, prime_time, "Two")
+            } else {
+                progress_bar(drink_two_n, prime_time, "Two")
+            }
+            await fetch('/drink_two_prime');
+        } else {
+            myModal.show()
+        } 
+    }
+    
+    async function drinkThreeP() {
+        if (cup_status) {
+            myModal.hide()
+            const drinkThreename_value = drinkThreename.value;
+            if (drinkThreename_value) {
+                progress_bar(drinkThreename_value, prime_time, "Three")
+            } else {
+                progress_bar(drink_three_n, prime_time, "Three")
+            }
+            await fetch('/drink_three_prime');
+        } else {
+            myModal.show()
+        } 
+    }
+    
+    async function drinkFourP() {
+        if (cup_status) {
+            myModal.hide()
+            const drinkFourname_value = drinkFourname.value;
+            if (drinkFourname_value) {
+                progress_bar(drinkFourname_value, prime_time, "Four")
+            } else {
+                progress_bar(drink_four_n, prime_time, "Four")
+            }
+            await fetch('/drink_four_prime');
+        } else {
+            myModal.show()
+        } 
+    }
+    
 </script>
-
 <script src="data:text/javascript,document.getElementById('home').onclick = function() { window.location.href = '/'; };" defer></script>
-<script src="data:text/javascript,document.getElementById('drink_one_prime').onclick = async function() { await fetch('/drink_one_prime'); };" defer></script>
-<script src="data:text/javascript,document.getElementById('drink_two_prime').onclick = async function() { await fetch('/drink_two_prime'); };" defer></script>
-<script src="data:text/javascript,document.getElementById('drink_three_prime').onclick = async function() { await fetch('/drink_three_prime'); };" defer></script>
-<script src="data:text/javascript,document.getElementById('drink_four_prime').onclick = async function() { await fetch('/drink_four_prime'); };" defer></script>
 <script src="data:text/javascript,document.getElementById('resetBtn').onclick = function() { window.location.href = '/reset'; };" defer></script>
+<script src="data:text/javascript,async function getStatus() {const t = await fetch('/status'); const tVal = await t.text(); var tVal_l = tVal.length; if (tVal === 'nocup') {cupFalse()} else if (tVal === 'yescup') {cupTrue()}; setTimeout(getStatus, 1000)}; getStatus();" defer></script>
 </body>
 </html>
