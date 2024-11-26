@@ -378,9 +378,7 @@ def main():
                 application_mode()
         else:
             print("Bad wifi connection! Either wrong credentials or wifi down...")
-            os.remove(WIFI_FILE)
-            os.remove(IP_ADDRESS)
-            machine_reset()    
+            main()
     except Exception as e:
         print(e)
         print("Wifi file not found, entering setup mode...")
