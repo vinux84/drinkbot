@@ -19,6 +19,7 @@ APP_TEMPLATE_PATH = "app_templates"
 WIFI_FILE = "wifi.json"
 IP_ADDRESS = "ip.json"
 DRINKS = "drinks.json"
+LOGS = "log.txt"
 WIFI_MAX_ATTEMPTS = 3
 account_sid = keys.TWILIO_ACCOUNT_SID
 auth_token = keys.TWILIO_AUTH_TOKEN
@@ -48,6 +49,7 @@ def hard_reset():
         os.remove(DRINKS)
         os.remove(WIFI_FILE)
         os.remove(IP_ADDRESS)
+        os.remove(LOGS)
     except Exception as e:
         print(f"{e} - File not found")
     drink_data = {"drink_one_state": "off", "drink_one_name": "Drink name", "drink_one_amount": "1.5 oz. (Single)",
@@ -56,7 +58,12 @@ def hard_reset():
                   "drink_four_state": "off", "drink_four_name": "Drink name", "drink_four_amount": "1.5 oz. (Single)"}
     with open(DRINKS, "w") as f:
         json.dump(drink_data, f)
-
+    if shared.drinkbot.has_hardware:
+        shared.drinkbot.reset_signal()
+        global running_thread
+        running_thread = False
+        utime.sleep(1)
+        
 def polling():
     global running_thread
     running_thread = True
@@ -71,6 +78,8 @@ def polling():
             utime.sleep_ms(40)
             if drink_two_button.value() is 1:
                 button_presses+=1
+            if drink_four_button.value() is 1:
+                button_presses+=2
             if button_presses == 1:
                 print("button one pressed")
                 drink_bot.button_dispense = True
@@ -79,6 +88,9 @@ def polling():
             elif button_presses == 2:
                 print("button one and two pressed, moving cup up")
                 shared.drinkbot.holder_up()
+            elif button_presses == 3:
+                hard_reset()
+                machine_reset()
         elif ((drink_two_button.value() is 1) and (utime.ticks_ms()-debounce) > 500):
             button_presses+=1
             debounce=utime.ticks_ms()
@@ -113,6 +125,8 @@ def polling():
             utime.sleep_ms(40)
             if drink_three_button.value() is 1:
                 button_presses+=1
+            if drink_one_button.value() is 1:
+                button_presses+=2
             if button_presses == 1:
                 print("button four pressed")
                 drink_bot.button_dispense = True
@@ -121,6 +135,9 @@ def polling():
             elif button_presses == 2:
                 print("button three and four pressed, moving cup down")
                 shared.drinkbot.holder_down()
+            elif button_presses == 3:
+                hard_reset()
+                machine_reset()
         
 def machine_reset():
     utime.sleep(3)
@@ -238,7 +255,7 @@ def application_mode():
         gc.collect()
         if shared.drinkbot.ir_sensor.value() == 1:
             drink_bot.cup = False
-            no_cup = "nocup"
+            no_cup = "nocup" 
             return f"{no_cup}"
         else:
             drink_bot.cup = True
@@ -305,11 +322,7 @@ def application_mode():
 
     def app_reset(request):                                            
         hard_reset()
-        if shared.drinkbot.has_hardware:
-            global running_thread
-            running_thread = False   
-            utime.sleep(1)
-            _thread.start_new_thread(machine_reset, ())
+        _thread.start_new_thread(machine_reset, ())
         return render_template(f"{APP_TEMPLATE_PATH}/reset.html", access_point_ssid = AP_NAME)
 
     def app_catch_all(request):
@@ -377,8 +390,8 @@ def main():
                 send_sms(recipient_num, sender_num, message, auth_token, account_sid)
                 application_mode()
         else:
-            print("Bad wifi connection! Either wrong credentials or wifi down...")
-            main()
+            print("Bad wifi connection! Either wrong credentials or wifi down.. retrying")
+            main()    
     except Exception as e:
         print(e)
         print("Wifi file not found, entering setup mode...")
@@ -389,4 +402,4 @@ def main():
 
     server.run()
 
-main()
+main() 
