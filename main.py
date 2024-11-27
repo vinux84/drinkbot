@@ -347,6 +347,7 @@ def application_mode():
 
 def main():
     shared.drinkbot.reset()
+    global running_thread
     try:
         os.stat(WIFI_FILE)
         with open(WIFI_FILE) as f:
@@ -391,15 +392,19 @@ def main():
                 application_mode()
         else:
             print("Bad wifi connection! Either wrong credentials or wifi down.. retrying")
-            main()    
+            if shared.drinkbot.has_hardware:
+                if running_thread == False:
+                    _thread.start_new_thread(polling, ())
+            main()
     except Exception as e:
         print(e)
         print("Wifi file not found, entering setup mode...")
         setup_mode()
-
     if shared.drinkbot.has_hardware:
-        _thread.start_new_thread(polling, ())
+        if running_thread == True:
+           server.run()
+        else:
+            _thread.start_new_thread(polling, ())
+            server.run()
 
-    server.run()
-
-main() 
+main()  
