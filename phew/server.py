@@ -1,8 +1,8 @@
 import uasyncio, os, time, device, machine, ssl, ubinascii, json
 from phew import is_connected_to_wifi
 from phew import logging
-
 from lib import keys, simple
+import shared
 
 _routes = []
 catchall_handler = None
@@ -405,6 +405,11 @@ def mqtt_disconnect(client):
     client.disconnect()
     print("Disconnected from MQTT Broker")
 
+def machine_reset():
+    time.sleep(3)
+    print("Resetting...")
+    machine.reset()
+
 async def mqtt_poll():
     global listen_counter
     if is_connected_to_wifi():
@@ -415,8 +420,13 @@ async def mqtt_poll():
             mqtt_listen(mqtt_client)
             await uasyncio.sleep(1)
         print(f"Stopped listening to {keys.MQTT_TOPIC}: disconnected from wifi.")
+        shared.drinkbot.connection_signal(3)
+        time.sleep(1)
+        shared.drinkbot.busy_signal()
+        machine_reset()
     else:
         print(f"Can't listen to {keys.MQTT_TOPIC}: disconnected from wifi.")
+        await uasyncio.sleep(1)
 
 async def main(host, port):
     uasyncio.create_task(uasyncio.start_server(_handle_request, host, port))
@@ -424,9 +434,9 @@ async def main(host, port):
 
 # run server and mqtt poll if online
 def run(host = "0.0.0.0", port = 80):
-  logging.info("> starting web server on port {}".format(port))
-  loop.create_task(main(host, port))
-  loop.run_forever()
+    logging.info("> starting web server on port {}".format(port))
+    loop.create_task(main(host, port))
+    loop.run_forever()
 
 def stop():
   loop.stop()

@@ -59,7 +59,7 @@ def hard_reset():
     with open(DRINKS, "w") as f:
         json.dump(drink_data, f)
     if shared.drinkbot.has_hardware:
-        shared.drinkbot.reset_signal()
+        shared.drinkbot.hard_reset_signal(2)
         global running_thread
         running_thread = False
         utime.sleep(1)
@@ -347,6 +347,7 @@ def application_mode():
 
 def main():
     shared.drinkbot.reset()
+    shared.drinkbot.connection_signal(1)
     global running_thread
     try:
         os.stat(WIFI_FILE)
@@ -361,6 +362,7 @@ def main():
                 else:
                     wifi_current_attempt += 1
         if is_connected_to_wifi():
+            shared.drinkbot.connection_signal(2)
             try: 
                 os.stat(IP_ADDRESS)
                 print("Checking if IP address changed...")
@@ -394,11 +396,13 @@ def main():
             print("Bad wifi connection! Either wrong credentials or wifi down.. retrying")
             if shared.drinkbot.has_hardware:
                 if running_thread == False:
+                    shared.drinkbot.connection_signal(3)
                     _thread.start_new_thread(polling, ())
             main()
     except Exception as e:
         print(e)
         print("Wifi file not found, entering setup mode...")
+        shared.drinkbot.hard_reset_signal(1)
         setup_mode()
     if shared.drinkbot.has_hardware:
         if running_thread == True:

@@ -69,40 +69,76 @@ class DrinkBot:
         self._spout_up()
 
     def reset(self):
-        self._stop_drinkbot()
         if self.no_hardware:
             print("[NO HARDWARE] Skipping cup reset...")
             return
+        self._stop_drinkbot()
         if self.limit_switch_top.value() == 1:
             self._cup_up()
             u = 1
-            u_twice = 1
             while u > 0:
                 if self.limit_switch_top.value() == 0:
                     self._cup_stop()
                     u -= 1
-                    utime.sleep(.10)
-                    self._cup_down()
-                    utime.sleep(.25)
-                    self._cup_stop()
-                    self._cup_up()
-                    while u_twice > 0:
-                        if self.limit_switch_top.value() == 0:
-                            self._cup_stop()
-                            u_twice -= 1
-        elif self.limit_switch_top.value() == 0:
-            du = 1
+
+    def connection_signal(self, cycles):
+        if self.no_hardware:
+            print("[NO HARDWARE] Skipping connection signal...")
+            return
+        if self.drinkbot_serving == True:
+            return
+        self.reset()
+        self.cycles = cycles
+        u = 1
+        for cycle in range(self.cycles):
+            self.drinkbot_serving = True
+            utime.sleep(.50)
             self._cup_down()
             utime.sleep(.25)
             self._cup_stop()
+            utime.sleep(.10)
             self._cup_up()
-            while du > 0:
+            while u > 0:
                 if self.limit_switch_top.value() == 0:
                     self._cup_stop()
-                    du -= 1
+                    self.drinkbot_serving = False
+                    u -= 1
     
+    def busy_signal(self):
+        if self.no_hardware:
+            print("[NO HARDWARE] Skipping busy signal...")
+            return
+        self._cup_down()
+        utime.sleep(.25)
+        self._cup_stop()
+    
+    def hard_reset_signal(self, cycles):
+        if self.no_hardware:
+            print("[NO HARDWARE] Skipping hard reset signal...")
+            return
+        self.reset()
+        self.cycles = cycles
+        for cycle in range(self.cycles):
+            utime.sleep(.50)
+            if self.limit_switch_bottom.value() == 1:
+                self._cup_down()
+                d = 1
+                u = 1
+                while d > 0:
+                    if self.limit_switch_bottom.value() == 0:
+                        self._cup_stop()
+                        d -= 1
+                        self._cup_up()
+                        while u > 0:
+                            if self.limit_switch_top.value() == 0:
+                                self._cup_stop()
+                                u -= 1
+
     def holder_up(self):
-        self._stop_drinkbot()
+        if self.no_hardware:
+            print("[NO HARDWARE] Skipping cup holder configuration...")
+            return
+        self.reset()
         if self.limit_switch_top.value() == 1:
             self._cup_up()
             utime.sleep(.10)
@@ -111,32 +147,16 @@ class DrinkBot:
             print("Cup holder is at the top")
 
     def holder_down(self):
-        self._stop_drinkbot()
+        if self.no_hardware:
+            print("[NO HARDWARE] Skipping cup holder configuration...")
+            return
+        self.reset()
         if self.limit_switch_bottom.value() == 1:
             self._cup_down()
             utime.sleep(.10)
             self._cup_stop()
         else:
             print("Cup holder is at the bottom")
-    
-    def reset_signal(self):
-        self._stop_drinkbot()
-        if self.no_hardware:
-            print("[NO HARDWARE] Skipping hard reset signal...")
-            return
-        if self.limit_switch_bottom.value() == 1:
-            self._cup_down()
-            d = 1
-            u = 1
-            while d > 0:
-                if self.limit_switch_bottom.value() == 0:
-                    self._cup_stop()
-                    d -= 1
-                    self._cup_up()
-                    while u > 0:
-                        if self.limit_switch_top.value() == 0:
-                            self._cup_stop()
-                            u -= 1
     
     def _dispense_drink(self, drink, drink_amount):
         self.drink = drink
