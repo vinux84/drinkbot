@@ -90,19 +90,20 @@ class DrinkBot:
         self.reset()
         self.cycles = cycles
         u = 1
-        for cycle in range(self.cycles):
+        if not self.drinkbot_serving:
             self.drinkbot_serving = True
-            utime.sleep(.50)
-            self._cup_down()
-            utime.sleep(.25)
-            self._cup_stop()
-            utime.sleep(.10)
-            self._cup_up()
-            while u > 0:
-                if self.limit_switch_top.value() == 0:
-                    self._cup_stop()
-                    self.drinkbot_serving = False
-                    u -= 1
+            for cycle in range(self.cycles):
+                utime.sleep(.50)
+                self._cup_down()
+                utime.sleep(.25)
+                self._cup_stop()
+                utime.sleep(.10)
+                self._cup_up()
+                while u > 0:
+                    if self.limit_switch_top.value() == 0:
+                        self._cup_stop()
+                        self.drinkbot_serving = False
+                        u -= 1           
     
     def busy_signal(self):
         if self.no_hardware:

@@ -60,6 +60,8 @@ def hard_reset():
         json.dump(drink_data, f)
     if shared.drinkbot.has_hardware:
         shared.drinkbot.hard_reset_signal(2)
+        utime.sleep(1)
+        shared.drinkbot.busy_signal()
         global running_thread
         running_thread = False
         utime.sleep(1)
@@ -159,7 +161,8 @@ def setup_mode():
             f.close()
         global running_thread
         running_thread = False     
-        utime.sleep(1)                                                                 
+        utime.sleep(1)
+        shared.drinkbot.busy_signal()
         _thread.start_new_thread(machine_reset, ())
         return render_template(f"{AP_TEMPLATE_PATH}/configured.html", ssid = request.form["ssid"])
         
