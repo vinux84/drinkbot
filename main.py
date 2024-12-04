@@ -13,7 +13,7 @@ from lib import drink_bot, keys
 import shared
 
 AP_NAME = "DrinkBot"
-AP_DOMAIN = "drinkbot.io"
+AP_DOMAIN = "drinkbotOne.net"
 AP_TEMPLATE_PATH = "ap_templates"
 APP_TEMPLATE_PATH = "app_templates"
 WIFI_FILE = "wifi.json"

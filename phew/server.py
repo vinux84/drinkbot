@@ -406,7 +406,6 @@ def mqtt_disconnect(client):
     print("Disconnected from MQTT Broker")
 
 def machine_reset():
-    time.sleep(3)
     print("Resetting...")
     machine.reset()
 
@@ -418,17 +417,16 @@ async def mqtt_poll():
         print(f"Listening to {keys.MQTT_TOPIC} ...")
         while is_connected_to_wifi():
             mqtt_listen(mqtt_client)
-            await uasyncio.sleep(1)
+            await uasyncio.sleep_ms(500)
         print(f"Stopped listening to {keys.MQTT_TOPIC}: disconnected from wifi.")
         shared.drinkbot.connection_signal()
         shared.drinkbot.connection_signal()
         shared.drinkbot.connection_signal()
-        time.sleep(1)
         shared.drinkbot.busy_signal()
         machine_reset()
     else:
         print(f"Can't listen to {keys.MQTT_TOPIC}: disconnected from wifi.")
-        await uasyncio.sleep(1)
+        await uasyncio.sleep_ms(500)
 
 async def main(host, port):
     uasyncio.create_task(uasyncio.start_server(_handle_request, host, port))
