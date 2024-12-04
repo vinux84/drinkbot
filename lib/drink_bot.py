@@ -135,7 +135,6 @@ class DrinkBot:
         if self.no_hardware:
             print("[NO HARDWARE] Skipping cup holder configuration...")
             return
-        self.reset()
         if self.limit_switch_top.value() == 1:
             self._cup_up()
             utime.sleep(.10)
@@ -147,7 +146,6 @@ class DrinkBot:
         if self.no_hardware:
             print("[NO HARDWARE] Skipping cup holder configuration...")
             return
-        self.reset()
         if self.limit_switch_bottom.value() == 1:
             self._cup_down()
             utime.sleep(.10)
