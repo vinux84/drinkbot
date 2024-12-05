@@ -89,7 +89,7 @@ class DrinkBot:
         u = 1
         if not self.drinkbot_serving:
             self.drinkbot_serving = True
-            utime.sleep(.50)
+            utime.sleep(.25)
             self._cup_down()
             utime.sleep(.25)
             self._cup_stop()
@@ -116,7 +116,7 @@ class DrinkBot:
             print("[NO HARDWARE] Skipping hard reset signal...")
             return
         self.reset()
-        utime.sleep(.50)
+        utime.sleep(.25)
         if self.limit_switch_bottom.value() == 1:
             self._cup_down()
             d = 1
@@ -217,7 +217,6 @@ class DrinkBot:
         else:
             print("DrinkBot busy")
             
-
 def find_time(ounces):
     one_second = 1              
     time = ounces / one_second

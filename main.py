@@ -351,6 +351,7 @@ def application_mode():
 
 def main():
     shared.drinkbot.reset()
+    utime.sleep(1)
     shared.drinkbot.connection_signal()
     global running_thread
     try:
@@ -366,8 +367,6 @@ def main():
                 else:
                     wifi_current_attempt += 1
         if is_connected_to_wifi():
-            shared.drinkbot.connection_signal()
-            shared.drinkbot.connection_signal()
             try: 
                 os.stat(IP_ADDRESS)
                 print("Checking if IP address changed...")

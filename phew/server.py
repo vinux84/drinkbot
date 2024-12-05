@@ -415,6 +415,8 @@ async def mqtt_poll():
         mqtt_client = mqtt_setup()
         mqtt_connect(mqtt_client)
         print(f"Listening to {keys.MQTT_TOPIC} ...")
+        shared.drinkbot.connection_signal()
+        shared.drinkbot.connection_signal()
         while is_connected_to_wifi():
             mqtt_listen(mqtt_client)
             await uasyncio.sleep_ms(500)
