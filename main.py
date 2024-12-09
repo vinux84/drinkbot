@@ -416,5 +416,7 @@ def main():
         else:
             _thread.start_new_thread(polling, ())
             server.run()
+    else:
+        server.run()
 
 main()  
