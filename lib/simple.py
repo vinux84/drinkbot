@@ -67,9 +67,8 @@ class MQTTClient:
         addr = socket.getaddrinfo(self.server, self.port)[0][-1]
         self.sock.connect(addr)
         if self.ssl:
-            import ussl
-
-            self.sock = ussl.wrap_socket(self.sock, **self.ssl_params)
+            import ssl
+            self.sock = ssl.wrap_socket(self.sock, **self.ssl_params)
         premsg = bytearray(b"\x10\0\0\0\0\0")
         msg = bytearray(b"\x04MQTT\x04\x02\0\0")
 
