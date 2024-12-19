@@ -410,7 +410,6 @@ def machine_reset():
     machine.reset()
 
 async def mqtt_poll():
-    global listen_counter
     if is_connected_to_wifi():
         mqtt_client = mqtt_setup()
         mqtt_connect(mqtt_client)
